@@ -48,4 +48,11 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+
+
+    public function vendors()
+    {
+        return $this->hasOne(UserVendor::class, 'user_id');
+    }
 }

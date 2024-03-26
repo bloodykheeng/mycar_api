@@ -63,6 +63,7 @@ class UserController extends Controller
             'lastlogin' => 'nullable|date',
             'password' => 'required|string|min:8',
             'role' => 'required|exists:roles,name',
+            'vendor_id' => 'nullable|exists:vendors,id', // validate vendor_id
         ]);
 
 
@@ -87,6 +88,11 @@ class UserController extends Controller
             // Optionally get permissions associated with the user's role
             // $permissions = Permission::whereIn('id', $user->roles->first()->permissions->pluck('id'))->pluck('name');
             // $user->permissions = $permissions;
+
+            // Handle UserVendor relationship
+            if (isset($validatedData['vendor_id'])) {
+                $user->vendors()->create(['vendor_id' => $validatedData['vendor_id']]);
+            }
 
 
             DB::commit();
@@ -113,6 +119,7 @@ class UserController extends Controller
             'lastlogin' => 'nullable|date',
             'password' => 'sometimes|string|min:8',
             'role' => 'sometimes|exists:roles,name', // Add validation for role
+            'vendor_id' => 'nullable|exists:vendors,id', // validate vendor_id
         ]);
 
         $user = User::find($id);
@@ -142,6 +149,17 @@ class UserController extends Controller
             // Sync role if provided
             if (isset($validatedData['role'])) {
                 $user->syncRoles([$validatedData['role']]);
+            }
+
+
+            // Update or detach UserVendor relationship
+            if (isset($validatedData['vendor_id'])) {
+                $user->vendors()->updateOrCreate(
+                    ['user_id' => $user->id],
+                    ['vendor_id' => $validatedData['vendor_id']]
+                );
+            } else {
+                $user->vendors()->delete();
             }
 
             DB::commit();

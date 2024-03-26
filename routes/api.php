@@ -3,7 +3,12 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\API\VendorController;
+use App\Http\Controllers\API\ProductController;
+use App\Http\Controllers\API\ServiceController;
 use App\Http\Controllers\PasswordResetController;
+use App\Http\Controllers\API\ServiceTypeController;
+use App\Http\Controllers\API\ProductBrandController;
 
 
 
@@ -29,3 +34,31 @@ Route::post('/reset-password', [PasswordResetController::class, 'handlestoringNe
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
+
+
+// private routes
+Route::group(
+    ['middleware' => ['auth:sanctum']],
+    function () {
+        // Vendor routes
+        Route::apiResource('vendors', VendorController::class);
+
+        // service types
+        Route::apiResource('service-types', ServiceTypeController::class);
+
+
+        // Standard RESTful resource routes for services
+        Route::apiResource('services', ServiceController::class);
+
+        // Additional routes for active and inactive services
+        Route::get('services/active', [ServiceController::class, 'active'])->name('services.active');
+        Route::get('services/inactive', [ServiceController::class, 'inactive'])->name('services.inactive');
+
+
+        // ProductBrand routes
+        Route::apiResource('product-brands', ProductBrandController::class);
+
+        // Product routes
+        Route::apiResource('products', ProductController::class);
+    }
+);
