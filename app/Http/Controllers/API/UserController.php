@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Permission;
 
@@ -64,8 +65,13 @@ class UserController extends Controller
             'password' => 'required|string|min:8',
             'role' => 'required|exists:roles,name',
             'vendor_id' => 'nullable|exists:vendors,id', // validate vendor_id
+            'photo' => 'nullable|file|mimes:jpg,jpeg,png|max:2048', // Expect a file for the photo
         ]);
 
+        $photoUrl = null;
+        if ($request->hasFile('photo')) {
+            $photoUrl = $this->uploadPhoto($request->file('photo'), 'user_photos'); // Save the photo in a specific folder
+        }
 
         DB::beginTransaction();
 
@@ -78,6 +84,7 @@ class UserController extends Controller
                 'status' => $validatedData['status'],
                 'lastlogin' => $validatedData['lastlogin'] ?? now(),
                 'password' => Hash::make($validatedData['password']),
+                'photo_url' => $photoUrl,
             ]);
 
 
@@ -103,34 +110,59 @@ class UserController extends Controller
         }
     }
 
+    private function uploadPhoto($photo, $folderPath)
+    {
+        $publicPath = public_path($folderPath);
+        if (!File::exists($publicPath)) {
+            File::makeDirectory($publicPath, 0777, true, true);
+        }
+
+        $fileName = time() . '_' . $photo->getClientOriginalName();
+        $photo->move($publicPath, $fileName);
+
+        return '/' . $folderPath . '/' . $fileName;
+    }
+
+
+
+
 
 
     public function update(Request $request, $id)
     {
+
         // Check permission
         // if (!Auth::user()->can('update user')) {
         //     return response()->json(['message' => 'Unauthorized'], 403);
         // }
-
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $id,
             'status' => 'required|string|max:255',
             'lastlogin' => 'nullable|date',
-            'password' => 'sometimes|string|min:8',
-            'role' => 'sometimes|exists:roles,name', // Add validation for role
-            'vendor_id' => 'nullable|exists:vendors,id', // validate vendor_id
+            'photo' => 'nullable|file|mimes:jpg,jpeg,png|max:2048', // Validation for photo
+            'role' => 'sometimes|exists:roles,name',
+            'vendor_id' => 'nullable|exists:vendors,id',
         ]);
 
-        $user = User::find($id);
 
+        $user = User::find($id);
         if (!$user) {
             return response()->json(['message' => 'User not found'], 404);
         }
 
-
-
-        // $programId = $validatedData['program_id'];
+        $photoUrl = $user->photo_url;
+        if ($request->hasFile('photo')) {
+            // Delete old photo if exists
+            if ($photoUrl) {
+                $photoPath = parse_url($photoUrl, PHP_URL_PATH);
+                $photoPath = ltrim($photoPath, '/');
+                if (file_exists(public_path($photoPath))) {
+                    unlink(public_path($photoPath));
+                }
+            }
+            $photoUrl = $this->uploadPhoto($request->file('photo'), 'user_photos');
+        }
 
         DB::beginTransaction();
 
@@ -140,19 +172,13 @@ class UserController extends Controller
                 'email' => $validatedData['email'],
                 'status' => $validatedData['status'],
                 'lastlogin' => $validatedData['lastlogin'] ?? now(),
-                'password' => isset($validatedData['password']) ? Hash::make($validatedData['password']) : $user->password,
+                'photo_url' => $photoUrl,
             ]);
 
-
-
-
-            // Sync role if provided
             if (isset($validatedData['role'])) {
                 $user->syncRoles([$validatedData['role']]);
             }
 
-
-            // Update or detach UserVendor relationship
             if (isset($validatedData['vendor_id'])) {
                 $user->vendors()->updateOrCreate(
                     ['user_id' => $user->id],
@@ -173,14 +199,32 @@ class UserController extends Controller
 
 
 
+
+
     // ========================== destroy ====================
+
+
+
     public function destroy($id)
     {
+
         // if (!Auth::user()->can('delete user')) {
         //     return response()->json(['message' => 'Unauthorized'], 403);
         // }
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
 
-        $user = User::findOrFail($id);
+        // Delete user photo if exists
+        if ($user->photo_url) {
+            $photoPath = parse_url($user->photo_url, PHP_URL_PATH);
+            $photoPath = ltrim($photoPath, '/');
+            if (file_exists(public_path($photoPath))) {
+                unlink(public_path($photoPath));
+            }
+        }
+
         $user->delete();
 
         return response()->json(['message' => 'User deleted successfully']);

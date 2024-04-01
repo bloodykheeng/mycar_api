@@ -18,6 +18,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('status')->nullable()->index();
             $table->timestamp('lastlogin')->nullable()->useCurrent();
+            $table->string('photo_url');
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
