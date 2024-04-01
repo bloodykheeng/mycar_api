@@ -14,6 +14,7 @@ use App\Http\Controllers\API\DistrictController;
 use App\Http\Controllers\API\SubCountyController;
 use App\Http\Controllers\API\UserRolesController;
 use App\Http\Controllers\PasswordResetController;
+use App\Http\Controllers\API\ProductTypeController;
 use App\Http\Controllers\API\ServiceTypeController;
 use App\Http\Controllers\API\ProductBrandController;
 use App\Http\Controllers\API\UserPermissionsController;
@@ -64,6 +65,8 @@ Route::group(
         Route::get('services/active', [ServiceController::class, 'active'])->name('services.active');
         Route::get('services/inactive', [ServiceController::class, 'inactive'])->name('services.inactive');
 
+        // Product type
+        Route::resource('product-types', ProductTypeController::class);
 
         // ProductBrand routes
         Route::apiResource('product-brands', ProductBrandController::class);

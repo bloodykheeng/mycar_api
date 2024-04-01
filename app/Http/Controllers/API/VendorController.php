@@ -35,7 +35,7 @@ class VendorController extends Controller
         $validatedData =  $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'photo' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
+            // 'photo' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
             'code' => 'required|string|unique:vendors',
             'status' => 'required|string|max:255',
         ]);
@@ -74,18 +74,21 @@ class VendorController extends Controller
     // Update the specified vendor
     public function update(Request $request, $vendorId)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'photo' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
-            'code' => 'required|string|unique:vendors',
-            'status' => 'required|string|max:255',
-        ]);
 
         $vendor = Vendor::find($vendorId);
         if (!$vendor) {
             return response()->json(['message' => 'Vendor not found'], 404);
         }
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'photo' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
+            'code' => 'required|string|unique:vendors,code,' . $vendor->id, // Exclude the current vendor from the unique check
+            'status' => 'required|string|max:255',
+        ]);
+
+
 
         $photoUrl = $vendor->photo_url;
         if ($request->hasFile('photo')) {
@@ -102,6 +105,7 @@ class VendorController extends Controller
         $vendor->update([
             'name' => $request->name,
             'description' => $request->description,
+            'status' => $request->status,
             'photo_url' => $photoUrl,
             'updated_by' => Auth::id(),
         ]);

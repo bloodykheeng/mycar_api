@@ -18,6 +18,11 @@ class RolesAndPermissionsSeeder extends Seeder
                 'update user',
                 'delete user',
 
+                'view',
+                'create',
+                'update',
+                'delete',
+
                 'view roles',
                 'add permissions on roles',
                 'delete permissions on roles',
