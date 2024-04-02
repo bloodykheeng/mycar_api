@@ -24,7 +24,7 @@ class UserController extends Controller
         // }
 
         // Retrieve all users with their one-to-one relationships
-        $users = User::get();
+        $users = User::with(["vendors.vendor"])->get();
 
         // Adding role names to each user
         $users->transform(function ($user) {
@@ -41,7 +41,7 @@ class UserController extends Controller
         //     return response()->json(['message' => 'Unauthorized'], 403);
         // }
 
-        $user = User::findOrFail($id);
+        $user = User::with(["vendors.vendor"])->findOrFail($id);
 
         // Adding role name
         $user->role = $user->getRoleNames()->first() ?? "";
