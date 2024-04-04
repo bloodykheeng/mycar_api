@@ -17,3 +17,10 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+/public/product_brand_logos/*
+/public/product_photos/*
+/public/product_type_photos/*
+/public/product_videos/*
+/public/user_photos/*
+/public/vendor_photos/*
+

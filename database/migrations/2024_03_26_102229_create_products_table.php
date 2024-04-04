@@ -20,10 +20,11 @@ return new class extends Migration
             $table->year('year')->nullable();
             $table->integer('mileage')->nullable();
             $table->string('number_plate')->nullable();
-            $table->decimal('price', 10, 2);
+            $table->decimal('price', 15, 2);
             $table->string('color')->nullable();
             $table->integer('quantity')->default(0);
             $table->unsignedBigInteger('product_brand_id')->nullable();
+            $table->unsignedBigInteger('product_type_id')->nullable();
             $table->unsignedBigInteger('vendor_id')->nullable(); // Add this line
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
@@ -31,6 +32,7 @@ return new class extends Migration
 
             // Foreign key constraints
             $table->foreign('product_brand_id')->references('id')->on('product_brands')->onDelete('cascade');
+            $table->foreign('product_type_id')->references('id')->on('product_types')->onDelete('cascade');
             $table->foreign('vendor_id')->references('id')->on('vendors')->onDelete('cascade'); // Add this line
             $table->foreign('created_by')->references('id')->on('users')->onDelete('SET NULL');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('SET NULL');

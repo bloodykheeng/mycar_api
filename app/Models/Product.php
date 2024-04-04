@@ -21,6 +21,7 @@ class Product extends Model
         'color',
         'quantity',
         'product_brand_id',
+        'product_type_id',
         'vendor_id',
         'created_by',
         'updated_by'
@@ -30,10 +31,19 @@ class Product extends Model
     {
         return $this->hasMany(ProductPhoto::class, 'product_id');
     }
+    public function videos()
+    {
+        return $this->hasMany(ProductVideo::class);
+    }
 
     public function brand()
     {
         return $this->belongsTo(ProductBrand::class, 'product_brand_id');
+    }
+
+    public function type()
+    {
+        return $this->belongsTo(ProductType::class, 'product_type_id');
     }
 
     public function vendor()

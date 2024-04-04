@@ -35,13 +35,14 @@ class ProductBrandController extends Controller
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'logo' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
+            'status' => 'required|string|max:255',
+            'photo' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
             'country_of_origin' => 'required|string|max:255',
         ]);
 
         $logoUrl = null;
-        if ($request->hasFile('logo')) {
-            $logoUrl = $this->uploadPhoto($request->file('logo'), 'product_brand_logos');
+        if ($request->hasFile('photo')) {
+            $logoUrl = $this->uploadPhoto($request->file('photo'), 'product_brand_logos');
         }
 
         $productBrand = ProductBrand::create([
@@ -49,6 +50,7 @@ class ProductBrandController extends Controller
             'description' => $request->description,
             'logo_url' => $logoUrl,
             'country_of_origin' => $validatedData['country_of_origin'],
+            'status' => $validatedData['status'],
             'created_by' => Auth::id(),
             'updated_by' => Auth::id(),
         ]);
@@ -75,7 +77,8 @@ class ProductBrandController extends Controller
         $validatedData =  $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'logo' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
+            'status' => 'required|string|max:255',
+            'photo' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
             'country_of_origin' => 'required|string|max:255',
         ]);
 
@@ -85,7 +88,7 @@ class ProductBrandController extends Controller
         }
 
         $logoUrl = $productBrand->logo_url;
-        if ($request->hasFile('logo')) {
+        if ($request->hasFile('photo')) {
             if ($logoUrl) {
                 $photoPath = parse_url($logoUrl, PHP_URL_PATH);
                 $photoPath = ltrim($photoPath, '/');
@@ -93,7 +96,7 @@ class ProductBrandController extends Controller
                     unlink(public_path($photoPath));
                 }
             }
-            $logoUrl = $this->uploadPhoto($request->file('logo'), 'product_brand_logos');
+            $logoUrl = $this->uploadPhoto($request->file('photo'), 'product_brand_logos');
         }
 
         $productBrand->update([
@@ -101,6 +104,7 @@ class ProductBrandController extends Controller
             'description' => $request->description,
             'logo_url' => $logoUrl,
             'country_of_origin' => $validatedData['country_of_origin'],
+            'status' => $validatedData['status'],
             'updated_by' => Auth::id(),
         ]);
 
