@@ -18,17 +18,15 @@ return new class extends Migration
             $table->decimal('service_fee', 10, 2)->nullable();
             $table->date('start_date')->index();
             $table->date('end_date')->index();
+            $table->text('details')->nullable();
             $table->unsignedBigInteger('vendor_id')->nullable();
-            $table->unsignedBigInteger('user_id')->nullable(); // for srevises that dont require vendors
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
-            $table->string('status')->default('active')->index(); // 'active', 'inactive'
             $table->timestamps();
 
             // Foreign key constraints
             $table->foreign('service_type_id')->references('id')->on('service_types')->onDelete('cascade');
             $table->foreign('vendor_id')->references('id')->on('vendors')->onDelete('cascade');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('created_by')->references('id')->on('users')->onDelete('SET NULL');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('SET NULL');
         });

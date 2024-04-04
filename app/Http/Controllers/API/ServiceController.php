@@ -11,27 +11,27 @@ class ServiceController extends Controller
 {
     public function index()
     {
-        $services = Service::with(['serviceType', 'user', 'vendor', 'createdBy', 'updatedBy'])->get();
+        $services = Service::with(['serviceType',  'vendor', 'createdBy', 'updatedBy'])->get();
         return response()->json($services);
     }
 
 
     public function getActiveServices()
     {
-        $activeServices = Service::active()->with(['serviceType', 'user', 'vendor', 'createdBy', 'updatedBy'])->get();
+        $activeServices = Service::active()->with(['serviceType',  'vendor', 'createdBy', 'updatedBy'])->get();
         return response()->json($activeServices);
     }
 
 
     public function getInactiveServices()
     {
-        $inactiveServices = Service::inactive()->with(['serviceType', 'user', 'vendor', 'createdBy', 'updatedBy'])->get();
+        $inactiveServices = Service::inactive()->with(['serviceType',  'vendor', 'createdBy', 'updatedBy'])->get();
         return response()->json($inactiveServices);
     }
 
     public function show($id)
     {
-        $service = Service::with(['serviceType', 'user', 'vendor', 'createdBy', 'updatedBy'])->find($id);
+        $service = Service::with(['serviceType',  'vendor', 'createdBy', 'updatedBy'])->find($id);
         if (!$service) {
             return response()->json(['message' => 'Service not found'], 404);
         }
@@ -47,8 +47,7 @@ class ServiceController extends Controller
             'end_date' => 'required|date|after_or_equal:start_date',
             'service_fee' => 'required|numeric',
             'vendor_id' => 'required|exists:vendors,id',
-            'user_id' => 'required|exists:users,id',
-            'status' => 'required|in:active,inactive'
+            'details' => 'nullable',
         ]);
 
         $validated['created_by'] = Auth::id();
@@ -72,8 +71,7 @@ class ServiceController extends Controller
             'end_date' => 'sometimes|date|after_or_equal:start_date',
             'service_fee' => 'sometimes|numeric',
             'vendor_id' => 'sometimes|exists:vendors,id',
-            'user_id' => 'sometimes|exists:users,id',
-            'status' => 'sometimes|in:active,inactive'
+            'details' => 'nullable',
         ]);
 
         $validated['updated_by'] = Auth::id();

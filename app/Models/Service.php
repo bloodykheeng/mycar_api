@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Service extends Model
 {
@@ -16,10 +17,9 @@ class Service extends Model
         'end_date',
         'service_fee',
         'vendor_id',
-        'user_id',
+        'details',
         'created_by',
         'updated_by',
-        'status'
     ];
 
     public function serviceType()
@@ -27,10 +27,7 @@ class Service extends Model
         return $this->belongsTo(ServiceType::class, 'service_type_id');
     }
 
-    public function user()
-    {
-        return $this->belongsTo(User::class, 'user_id');
-    }
+
 
     public function vendor()
     {
@@ -52,8 +49,7 @@ class Service extends Model
      */
     public function scopeActive($query)
     {
-        return $query->where('status', 'active')
-            ->where('start_date', '<=', now())
+        return $query->where('start_date', '<=', now())
             ->where('end_date', '>=', now());
     }
 
@@ -63,8 +59,30 @@ class Service extends Model
     public function scopeInactive($query)
     {
         return $query->where(function ($q) {
-            $q->where('status', 'inactive')
-                ->orWhere('end_date', '<', now());
+            $q->where('end_date', '<', now());
         });
+    }
+
+    protected $appends = ['current_status']; // Add the custom attribute to the model's array form
+
+    /**
+     * Accessor for the "current_status" attribute.
+     */
+
+    public function getCurrentStatusAttribute()
+    {
+        $now = Carbon::now();
+        $startDate = Carbon::parse($this->start_date);
+        $endDate = Carbon::parse($this->end_date);
+
+        if ($now->isBetween($startDate, $endDate)) {
+            return 'running';
+        } elseif ($now->isAfter($endDate)) {
+            return 'expired';
+        } elseif ($now->isBefore($startDate)) {
+            return 'future';
+        }
+
+        return 'unknown'; // Fallback status
     }
 }

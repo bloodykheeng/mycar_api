@@ -17,14 +17,24 @@ use Spatie\Permission\Models\Permission;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         // if (!Auth::user()->can('view users')) {
         //     return response()->json(['message' => 'Unauthorized'], 403);
         // }
 
+        $query = User::query();
+
+        // Check if vendor_id is provided and not null
+        if ($request->has('vendor_id') && $request->vendor_id !== null) {
+            // Filter users by the provided vendor_id
+            $query->whereHas('vendors', function ($query) use ($request) {
+                $query->where('vendor_id', $request->vendor_id);
+            });
+        }
+
         // Retrieve all users with their one-to-one relationships
-        $users = User::with(["vendors.vendor"])->get();
+        $users = $query->with(["vendors.vendor"])->get();
 
         // Adding role names to each user
         $users->transform(function ($user) {
@@ -34,6 +44,7 @@ class UserController extends Controller
 
         return response()->json($users);
     }
+
 
     public function show($id)
     {
