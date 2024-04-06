@@ -1,4 +1,4 @@
- <?php
+<?php
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -11,22 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('services', function (Blueprint $table) {
+        Schema::create('garages', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('service_type_id');
-            $table->string('name')->nullable();
-            $table->decimal('service_fee', 10, 2)->nullable();
-            $table->date('start_date')->index();
-            $table->date('end_date')->index();
-            $table->text('details')->nullable();
-            $table->unsignedBigInteger('vendor_id')->nullable();
+            $table->string('name');
+            $table->string('address')->nullable();
+            $table->string('photo_url')->nullable();
+            $table->boolean('availability')->default(true);
+            $table->string('opening_hours')->nullable();
+            $table->text('special_features')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
 
-            // Foreign key constraints
-            $table->foreign('service_type_id')->references('id')->on('service_types')->onDelete('cascade');
-            $table->foreign('vendor_id')->references('id')->on('vendors')->onDelete('cascade');
+            // Define foreign key constraints
             $table->foreign('created_by')->references('id')->on('users')->onDelete('SET NULL');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('SET NULL');
         });
@@ -37,6 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('services');
+        Schema::dropIfExists('garages');
     }
 };

@@ -11,6 +11,9 @@ use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\ServiceController;
 use App\Http\Controllers\API\VillageController;
 use App\Http\Controllers\API\DistrictController;
+use App\Http\Controllers\API\GarageController;
+use App\Http\Controllers\API\GarageReviewController;
+use App\Http\Controllers\API\MotorThirdPartyController;
 use App\Http\Controllers\API\SubCountyController;
 use App\Http\Controllers\API\UserRolesController;
 use App\Http\Controllers\PasswordResetController;
@@ -18,6 +21,7 @@ use App\Http\Controllers\API\ProductTypeController;
 use App\Http\Controllers\API\ServiceTypeController;
 use App\Http\Controllers\API\ProductBrandController;
 use App\Http\Controllers\API\UserPermissionsController;
+use App\Http\Controllers\API\SparePartController;
 
 
 
@@ -75,6 +79,17 @@ Route::group(
         Route::apiResource('products', ProductController::class);
 
 
+        // ====================== Spare Parts ===========================
+        Route::resource('spare-parts', SparePartController::class);
+
+        // ====================== Motor Third Party =====================
+        Route::resource('motor-third-parties', MotorThirdPartyController::class);
+
+        // ====================== Motor Third Party =====================
+        Route::resource('garages', GarageController::class);
+
+        // ====================== Garage Review =========================
+        Route::resource('garage-review', GarageReviewController::class);
 
 
         //======================= locations =============================
