@@ -34,8 +34,8 @@ class SparePartController extends Controller
         $validated['updated_by'] = Auth::id();
 
         $photoUrl = null;
-        if ($request->hasFile('photo_url')) {
-            $photoUrl = $this->uploadPhoto($request->file('photo_url'), 'spare_part_photos'); // Save the photo in a specific folder
+        if ($request->hasFile('photo')) {
+            $photoUrl = $this->uploadPhoto($request->file('photo'), 'spare_part_photos'); // Save the photo in a specific folder
             $validated['photo_url'] = $photoUrl;
         }
 
@@ -46,7 +46,7 @@ class SparePartController extends Controller
     public function show($id)
     {
 
-        $sparePart = SparePart::with(['vendor','createdBy', 'updatedBy'])->find($id);
+        $sparePart = SparePart::with(['vendor', 'createdBy', 'updatedBy'])->find($id);
 
         if (!$sparePart) {
             return response()->json(['message' => 'Spare Part not found'], 404);

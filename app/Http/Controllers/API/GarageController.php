@@ -36,6 +36,7 @@ class GarageController extends Controller
             $photoUrl = $this->uploadPhoto($request->file('photo'), 'garage_photos');
             $validatedData['photo_url'] = $photoUrl;
         }
+        $validatedData['availability'] = $validatedData['availability'] ? 1 : 0;
         $validatedData['created_by'] = Auth::id();
         $validatedData['updated_by'] = Auth::id();
 
@@ -83,6 +84,7 @@ class GarageController extends Controller
             $validatedData['photo_url'] = $photoUrl;
         }
         $validatedData['updated_by'] = Auth::id();
+        $validatedData['availability'] = $validatedData['availability'] ? 1 : 0;
 
         $garage->update($validatedData);
 
