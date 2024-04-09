@@ -5,25 +5,27 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\CountyController;
+use App\Http\Controllers\API\GarageController;
 use App\Http\Controllers\API\ParishController;
 use App\Http\Controllers\API\VendorController;
+use App\Http\Controllers\API\ParkingController;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\ServiceController;
 use App\Http\Controllers\API\VillageController;
 use App\Http\Controllers\API\DistrictController;
-use App\Http\Controllers\API\GarageController;
-use App\Http\Controllers\API\GarageReviewController;
-use App\Http\Controllers\API\MotorThirdPartyController;
+use App\Http\Controllers\API\OfficeFeeController;
+use App\Http\Controllers\API\SparePartController;
 use App\Http\Controllers\API\SubCountyController;
 use App\Http\Controllers\API\UserRolesController;
 use App\Http\Controllers\PasswordResetController;
+use App\Http\Controllers\API\ParkingFeeController;
 use App\Http\Controllers\API\ProductTypeController;
 use App\Http\Controllers\API\ServiceTypeController;
+use App\Http\Controllers\API\GarageReviewController;
 use App\Http\Controllers\API\ProductBrandController;
+use App\Http\Controllers\API\SparePartTypeController;
+use App\Http\Controllers\API\MotorThirdPartyController;
 use App\Http\Controllers\API\UserPermissionsController;
-use App\Http\Controllers\API\SparePartController;
-
-
 
 // Public Routes
 Route::post('/register', [AuthController::class, 'register']);
@@ -78,6 +80,8 @@ Route::group(
         // Product routes
         Route::apiResource('products', ProductController::class);
 
+        // ======================  Spare Part Types =====================
+        Route::resource('spare-part-types', SparePartTypeController::class);
 
         // ====================== Spare Parts ===========================
         Route::resource('spare-parts', SparePartController::class);
@@ -90,6 +94,15 @@ Route::group(
 
         // ====================== Garage Review =========================
         Route::resource('garage-review', GarageReviewController::class);
+
+        // ====================== Office Fees ===========================
+        Route::resource('office-fees', OfficeFeeController::class);
+
+        //=================== parking =========================
+        Route::resource('parking', ParkingController::class);
+
+        // ====================== Parking Fees ===========================
+        Route::resource('parking-fees', ParkingFeeController::class);
 
 
         //======================= locations =============================

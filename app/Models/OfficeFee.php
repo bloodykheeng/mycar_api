@@ -5,34 +5,22 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class SparePart extends Model
+class OfficeFee extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'name',
+        'service_description',
         'photo_url',
-        'description',
-        'price',
-        'approval_status',
-        'spare_part_type_id',
-        'vendor_id',
+        'fee_amount',
+        'currency',
+        'payment_terms',
+        'notes',
+        'room_capacity',
+        'billing_cycle',
         'created_by',
         'updated_by',
     ];
-
-    // Define the relationships
-    public function vendor()
-    {
-        return $this->belongsTo(Vendor::class);
-    }
-
-
-
-    public function sparePartType()
-    {
-        return $this->belongsTo(SparePartType::class);
-    }
 
     public function createdBy()
     {

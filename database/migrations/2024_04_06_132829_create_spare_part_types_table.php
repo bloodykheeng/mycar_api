@@ -11,22 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('spare_parts', function (Blueprint $table) {
+        Schema::create('spare_part_types', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('status')->default('active')->index();
             $table->string('photo_url')->nullable();
             $table->string('description')->nullable();
-            $table->decimal('price', 8, 2);
-            $table->enum('approval_status', ['pending', 'approved', 'rejected'])->default('pending');
-            $table->unsignedBigInteger('spare_part_type_id')->nullable();
-            $table->unsignedBigInteger('vendor_id')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
-        
-            // Define foreign key constraints
-            $table->foreign('spare_part_type_id')->references('id')->on('spare_part_types')->onDelete('cascade');
-            $table->foreign('vendor_id')->references('id')->on('vendors')->onDelete('cascade');
+
             $table->foreign('created_by')->references('id')->on('users')->onDelete('SET NULL');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('SET NULL');
         });
@@ -37,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('spare_parts');
+        Schema::dropIfExists('spare_part_types');
     }
 };
