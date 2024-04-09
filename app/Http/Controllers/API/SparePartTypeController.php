@@ -33,8 +33,8 @@ class SparePartTypeController extends Controller
         $validated['updated_by'] = Auth::id();
 
         $photoUrl = null;
-        if ($request->hasFile('photo_url')) {
-            $photoUrl = $this->uploadPhoto($request->file('photo_url'), 'spare_part_type_photos'); // Save the photo in a specific folder
+        if ($request->hasFile('photo')) {
+            $photoUrl = $this->uploadPhoto($request->file('photo'), 'spare_part_type_photos'); // Save the photo in a specific folder
             $validated['photo_url'] = $photoUrl;
         }
 

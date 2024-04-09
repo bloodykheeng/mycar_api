@@ -15,7 +15,7 @@ class SparePartController extends Controller
      */
     public function index()
     {
-        $spareParts = SparePart::with(['sparePartType','vendor', 'createdBy', 'updatedBy'])->get();
+        $spareParts = SparePart::with(['sparePartType', 'vendor', 'createdBy', 'updatedBy'])->get();
         return response()->json($spareParts);
     }
 
@@ -47,11 +47,8 @@ class SparePartController extends Controller
     public function show($id)
     {
 
-<<<<<<< HEAD
-        $sparePart = SparePart::with(['vendor', 'createdBy', 'updatedBy'])->find($id);
-=======
-        $sparePart = SparePart::with(['sparePartType','vendor','createdBy', 'updatedBy'])->find($id);
->>>>>>> mark
+
+        $sparePart = SparePart::with(['sparePartType', 'vendor', 'createdBy', 'updatedBy'])->find($id);
 
         if (!$sparePart) {
             return response()->json(['message' => 'Spare Part not found'], 404);
