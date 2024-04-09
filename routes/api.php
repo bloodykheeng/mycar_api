@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\API\CarWashFeeController;
+use App\Http\Controllers\API\CarWashOrderController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -103,6 +105,12 @@ Route::group(
 
         // ====================== Parking Fees ===========================
         Route::resource('parking-fees', ParkingFeeController::class);
+
+        // ====================== Car Wash Fees ===========================
+        Route::resource('car-wash-fees', CarWashFeeController::class);
+
+        // ====================== Car Wash Orders ===========================
+        Route::resource('car-wash-orders', CarWashOrderController::class);
 
 
         //======================= locations =============================

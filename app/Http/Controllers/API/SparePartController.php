@@ -47,11 +47,7 @@ class SparePartController extends Controller
     public function show($id)
     {
 
-<<<<<<< HEAD
-        $sparePart = SparePart::with(['vendor', 'createdBy', 'updatedBy'])->find($id);
-=======
         $sparePart = SparePart::with(['sparePartType','vendor','createdBy', 'updatedBy'])->find($id);
->>>>>>> mark
 
         if (!$sparePart) {
             return response()->json(['message' => 'Spare Part not found'], 404);
