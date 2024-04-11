@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Product extends Model
+class Car extends Model
 {
     use HasFactory;
 
@@ -20,8 +20,10 @@ class Product extends Model
         'price',
         'color',
         'quantity',
-        'product_brand_id',
-        'product_type_id',
+        'visibility',
+        'status',
+        'car_brand_id',
+        'car_type_id',
         'vendor_id',
         'created_by',
         'updated_by'
@@ -29,21 +31,21 @@ class Product extends Model
 
     public function photos()
     {
-        return $this->hasMany(ProductPhoto::class, 'product_id');
+        return $this->hasMany(CarPhoto::class, 'car_id');
     }
     public function videos()
     {
-        return $this->hasMany(ProductVideo::class);
+        return $this->hasMany(CarVideo::class);
     }
 
     public function brand()
     {
-        return $this->belongsTo(ProductBrand::class, 'product_brand_id');
+        return $this->belongsTo(CarBrand::class, 'car_brand_id');
     }
 
     public function type()
     {
-        return $this->belongsTo(ProductType::class, 'product_type_id');
+        return $this->belongsTo(CarType::class, 'car_type_id');
     }
 
     public function vendor()

@@ -12,16 +12,19 @@ class CarWashFee extends Model
     protected $fillable = [
         'name',
         'fee_amount',
-        'product_type_id',
+        'currency',
+        'billing_cycle',
+        'status',
+        'car_type_id',
         'created_by',
         'updated_by',
     ];
 
 
 
-    public function productType()
+    public function carType()
     {
-        return $this->belongsTo(ProductType::class);
+        return $this->belongsTo(CarType::class);
     }
 
     public function createdBy()

@@ -11,15 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('districts', function (Blueprint $table) {
+        Schema::create('car_photos', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->index();
-            $table->timestamps();
+            $table->unsignedBigInteger('car_id');
+            $table->string('photo_url');
+            $table->text('caption')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
+            $table->timestamps();
 
-            // Define foreign key constraints
-
+            // Foreign key constraints
+            $table->foreign('car_id')->references('id')->on('cars')->onDelete('cascade');
             $table->foreign('created_by')->references('id')->on('users')->onDelete('SET NULL');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('SET NULL');
         });
@@ -30,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('districts');
+        Schema::dropIfExists('car_photos');
     }
 };

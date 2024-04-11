@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('products', function (Blueprint $table) {
+        Schema::create('cars', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->text('description')->nullable();
@@ -23,16 +23,18 @@ return new class extends Migration
             $table->decimal('price', 15, 2);
             $table->string('color')->nullable();
             $table->integer('quantity')->default(0);
-            $table->unsignedBigInteger('product_brand_id')->nullable();
-            $table->unsignedBigInteger('product_type_id')->nullable();
+            $table->string('visibility')->default('public')->index();
+            $table->string('status')->default('sale')->index();
+            $table->unsignedBigInteger('car_brand_id')->nullable();
+            $table->unsignedBigInteger('car_type_id')->nullable();
             $table->unsignedBigInteger('vendor_id')->nullable(); // Add this line
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
 
             // Foreign key constraints
-            $table->foreign('product_brand_id')->references('id')->on('product_brands')->onDelete('cascade');
-            $table->foreign('product_type_id')->references('id')->on('product_types')->onDelete('cascade');
+            $table->foreign('car_brand_id')->references('id')->on('car_brands')->onDelete('cascade');
+            $table->foreign('car_type_id')->references('id')->on('car_types')->onDelete('cascade');
             $table->foreign('vendor_id')->references('id')->on('vendors')->onDelete('cascade'); // Add this line
             $table->foreign('created_by')->references('id')->on('users')->onDelete('SET NULL');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('SET NULL');
@@ -44,6 +46,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('products');
+        Schema::dropIfExists('cars');
     }
 };

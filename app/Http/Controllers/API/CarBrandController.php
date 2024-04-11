@@ -2,31 +2,32 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Models\ProductBrand;
+
+use App\Models\CarBrand;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 
-class ProductBrandController extends Controller
+class CarBrandController extends Controller
 {
     // Display a listing of product brands
     public function index()
     {
-        $productBrands = ProductBrand::with(['createdBy', 'updatedBy'])->get();
-        return response()->json($productBrands);
+        $carBrands = CarBrand::with(['createdBy', 'updatedBy'])->get();
+        return response()->json($carBrands);
     }
 
     // Display the specified product brand
     public function show($id)
     {
-        $productBrand = ProductBrand::with(['createdBy', 'updatedBy'])->find($id);
+        $carBrand = CarBrand::with(['createdBy', 'updatedBy'])->find($id);
 
-        if (!$productBrand) {
-            return response()->json(['message' => 'Product brand not found'], 404);
+        if (!$carBrand) {
+            return response()->json(['message' => 'car brand not found'], 404);
         }
 
-        return response()->json($productBrand);
+        return response()->json($carBrand);
     }
 
     // Store a newly created product brand
@@ -42,10 +43,10 @@ class ProductBrandController extends Controller
 
         $logoUrl = null;
         if ($request->hasFile('photo')) {
-            $logoUrl = $this->uploadPhoto($request->file('photo'), 'product_brand_logos');
+            $logoUrl = $this->uploadPhoto($request->file('photo'), 'car_brand_logos');
         }
 
-        $productBrand = ProductBrand::create([
+        $carBrand = CarBrand::create([
             'name' => $request->name,
             'description' => $request->description,
             'logo_url' => $logoUrl,
@@ -55,7 +56,7 @@ class ProductBrandController extends Controller
             'updated_by' => Auth::id(),
         ]);
 
-        return response()->json(['message' => 'Product brand created successfully', 'data' => $productBrand]);
+        return response()->json(['message' => 'car brand created successfully', 'data' => $carBrand]);
     }
 
     private function uploadPhoto($photo, $folderPath)
@@ -72,7 +73,7 @@ class ProductBrandController extends Controller
     }
 
     // Update the specified product brand
-    public function update(Request $request, $productBrandId)
+    public function update(Request $request, $carBrandId)
     {
         $validatedData =  $request->validate([
             'name' => 'required|string|max:255',
@@ -82,12 +83,12 @@ class ProductBrandController extends Controller
             'country_of_origin' => 'required|string|max:255',
         ]);
 
-        $productBrand = ProductBrand::find($productBrandId);
-        if (!$productBrand) {
-            return response()->json(['message' => 'Product brand not found'], 404);
+        $carBrand = CarBrand::find($carBrandId);
+        if (!$carBrand) {
+            return response()->json(['message' => 'car brand not found'], 404);
         }
 
-        $logoUrl = $productBrand->logo_url;
+        $logoUrl = $carBrand->logo_url;
         if ($request->hasFile('photo')) {
             if ($logoUrl) {
                 $photoPath = parse_url($logoUrl, PHP_URL_PATH);
@@ -96,10 +97,10 @@ class ProductBrandController extends Controller
                     unlink(public_path($photoPath));
                 }
             }
-            $logoUrl = $this->uploadPhoto($request->file('photo'), 'product_brand_logos');
+            $logoUrl = $this->uploadPhoto($request->file('photo'), 'car_brand_logos');
         }
 
-        $productBrand->update([
+        $carBrand->update([
             'name' => $request->name,
             'description' => $request->description,
             'logo_url' => $logoUrl,
@@ -108,27 +109,27 @@ class ProductBrandController extends Controller
             'updated_by' => Auth::id(),
         ]);
 
-        return response()->json(['message' => 'Product brand updated successfully', 'data' => $productBrand]);
+        return response()->json(['message' => 'car brand updated successfully', 'data' => $carBrand]);
     }
 
     // Remove the specified product brand
     public function destroy($id)
     {
-        $productBrand = ProductBrand::find($id);
+        $carBrand = CarBrand::find($id);
 
-        if (!$productBrand) {
-            return response()->json(['message' => 'Product brand not found'], 404);
+        if (!$carBrand) {
+            return response()->json(['message' => 'car brand not found'], 404);
         }
 
-        if ($productBrand->logo_url) {
-            $photoPath = parse_url($productBrand->logo_url, PHP_URL_PATH);
+        if ($carBrand->logo_url) {
+            $photoPath = parse_url($carBrand->logo_url, PHP_URL_PATH);
             $photoPath = ltrim($photoPath, '/');
             if (file_exists(public_path($photoPath))) {
                 unlink(public_path($photoPath));
             }
         }
 
-        $productBrand->delete();
+        $carBrand->delete();
 
         return response()->json(null, 204);
     }

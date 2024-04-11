@@ -11,17 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('product_videos', function (Blueprint $table) {
+        Schema::create('car_brands', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('product_id');
-            $table->string('video_url');
-            $table->text('caption')->nullable();
+            $table->string('name');
+            $table->string('status')->default('active')->index();
+            $table->text('description')->nullable();
+            $table->string('logo_url')->nullable();
+            $table->string('country_of_origin')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
 
+
             // Foreign key constraints
-            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
             $table->foreign('created_by')->references('id')->on('users')->onDelete('SET NULL');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('SET NULL');
         });
@@ -32,6 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('product_videos');
+        Schema::dropIfExists('car_brands');
     }
 };

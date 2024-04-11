@@ -15,13 +15,14 @@ class CarWashOrder extends Model
         'start_date',
         'end_date',
         'vendor_id',
+        'details',
         'created_by',
         'updated_by',
     ];
 
     public function car()
     {
-        return $this->belongsTo(Product::class, 'car_id');
+        return $this->belongsTo(Car::class, 'car_id');
     }
 
     public function carWashFee()

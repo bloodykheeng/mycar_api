@@ -17,12 +17,13 @@ return new class extends Migration
             $table->unsignedBigInteger('car_id');
             $table->date('start_date')->index();
             $table->date('end_date')->index()->nullable();
+            $table->text('details')->nullable();
             $table->unsignedBigInteger('vendor_id')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
-            
+
             $table->timestamps();
-            $table->foreign('car_id')->references('id')->on('products')->onDelete('cascade');
+            $table->foreign('car_id')->references('id')->on('cars')->onDelete('cascade');
             $table->foreign('car_wash_fee_id')->references('id')->on('car_wash_fees')->onDelete('cascade');
             $table->foreign('vendor_id')->references('id')->on('vendors')->onDelete('cascade');
             $table->foreign('created_by')->references('id')->on('users')->onDelete('set null');

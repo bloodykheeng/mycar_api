@@ -2,81 +2,76 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Models\ParkingFee;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class ParkingFeeController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $parkingFees = ParkingFee::with(['createdBy', 'updatedBy'])->get();
+        $parkingFees = ParkingFee::with(['carType', 'createdBy', 'updatedBy'])->get();
         return response()->json($parkingFees);
+    }
+
+    public function show($id)
+    {
+        $parkingFee = ParkingFee::with(['carType', 'createdBy', 'updatedBy'])->find($id);
+        if (!$parkingFee) {
+            return response()->json(['message' => 'Parking fee not found'], 404);
+        }
+        return response()->json($parkingFee);
     }
 
     public function store(Request $request)
     {
-
         $validated = $request->validate([
-            'fee_amount' => 'required|numeric|min:0',
-            'currency' => 'required|string|max:6',
-            'billing_cycle' => 'required|string|in:daily',
+            'name' => 'nullable|string',
+            'currency' => 'required|string|max:3',
+            'billing_cycle' => 'required|string',
+            'status' => 'required|string',
+            'fee_amount' => 'required|numeric',
+            'car_type_id' => 'required|exists:car_types,id',
         ]);
 
         $validated['created_by'] = Auth::id();
         $validated['updated_by'] = Auth::id();
 
-        $officeFee = ParkingFee::create($validated);
-        return response()->json($officeFee, 201);
-    }
-
-    public function show($id)
-    {
-
-        $officeFee = ParkingFee::with(['createdBy', 'updatedBy'])->find($id);
-
-        if (!$officeFee) {
-            return response()->json(['message' => 'Parking Fee not found'], 404);
-        }
-
-        return response()->json($officeFee);
+        $parkingFee = ParkingFee::create($validated);
+        return response()->json(['message' => 'Parking fee created successfully', 'data' => $parkingFee], 201);
     }
 
     public function update(Request $request, $id)
     {
-        $officeFee = ParkingFee::find($id);
-        if (!$officeFee) {
-            return response()->json(['message' => 'Parking Fee not found'], 404);
+        $parkingFee = ParkingFee::find($id);
+        if (!$parkingFee) {
+            return response()->json(['message' => 'Parking fee not found'], 404);
         }
 
         $validated = $request->validate([
-            'fee_amount' => 'required|numeric|min:0',
-            'currency' => 'required|string|max:6',
-            'billing_cycle' => 'required|string|in:daily',
+            'name' => 'nullable|string',
+            'currency' => 'sometimes|string|max:3',
+            'billing_cycle' => 'sometimes|string',
+            'status' => 'sometimes|string',
+            'fee_amount' => 'sometimes|numeric',
+            'car_type_id' => 'sometimes|exists:car_types,id',
         ]);
 
         $validated['updated_by'] = Auth::id();
 
-        $officeFee->update($validated);
-        return response()->json($officeFee);
+        $parkingFee->update($validated);
+        return response()->json(['message' => 'Parking fee updated successfully', 'data' => $parkingFee]);
     }
 
     public function destroy($id)
     {
-        $officeFee = ParkingFee::find($id);
-
-        if (!$officeFee) {
-            return response()->json(['message' => 'Parking Fee not found'], 404);
+        $parkingFee = ParkingFee::find($id);
+        if (!$parkingFee) {
+            return response()->json(['message' => 'Parking fee not found'], 404);
         }
 
-        $officeFee->delete();
-
-        return response()->json(null, 204); // No content to indicate successful deletion
+        $parkingFee->delete();
+        return response()->json(null, 204);
     }
-
-    
 }

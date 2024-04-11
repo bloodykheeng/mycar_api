@@ -11,13 +11,31 @@ class ParkingController extends Controller
 {
     public function index()
     {
-        $parking = Parking::with(['car',  'vendor', 'createdBy', 'updatedBy'])->get();
+        // Start building the query
+        $query = Parking::with(['car', 'parkingFee', 'vendor', 'createdBy', 'updatedBy']);
+
+        // Get the currently authenticated user
+        /** @var \App\Models\User */
+        $user = Auth::user();
+
+        // Check if the user has the 'Vendor' role and apply the filter
+        if ($user && $user->hasRole('Vendor')) {
+            // Assuming the UserVendor model defines the relationship to get the vendor id
+            $vendorId = $user->vendors->vendor_id ?? null;
+            if ($vendorId) {
+                $query->where('vendor_id', $vendorId);
+            }
+        }
+
+        // Execute the query and get the results
+        $parking = $query->get();
+
         return response()->json($parking);
     }
-
     public function show($id)
     {
-        $parking = Parking::with(['car',  'vendor', 'createdBy', 'updatedBy'])->find($id);
+        // Include 'parkingFee' in the with() method to fetch its data
+        $parking = Parking::with(['car', 'parkingFee', 'vendor', 'createdBy', 'updatedBy'])->find($id);
         if (!$parking) {
             return response()->json(['message' => 'Parking not found'], 404);
         }
@@ -27,11 +45,8 @@ class ParkingController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'car_id' => 'required|exists:products,id',
-            'currency' => 'required|string|max:3',
-            'billing_cycle' => 'required|string',
-            'status' => 'required|string',
-            'fee_amount' => 'required|numeric',
+            'car_id' => 'required|exists:cars,id',
+            'parking_fee_id' => 'required|exists:parking_fees,id', // Add parking_fee_id validation
             'start_date' => 'required|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
             'details' => 'nullable|string',
@@ -45,7 +60,6 @@ class ParkingController extends Controller
         return response()->json(['message' => 'Parking created successfully', 'data' => $parking], 201);
     }
 
-
     public function update(Request $request, $id)
     {
         $parking = Parking::find($id);
@@ -54,12 +68,9 @@ class ParkingController extends Controller
         }
 
         $validated = $request->validate([
-            'car_id' => 'sometimes|exists:products,id',
+            'car_id' => 'sometimes|exists:cars,id',
+            'parking_fee_id' => 'sometimes|exists:parking_fees,id', // Add parking_fee_id validation
             'vendor_id' => 'sometimes|exists:vendors,id',
-            'currency' => 'sometimes|string|max:255',
-            'billing_cycle' => 'sometimes|string|max:255',
-            'status' => 'sometimes|string|max:255',
-            'fee_amount' => 'sometimes|numeric',
             'start_date' => 'sometimes|date',
             'end_date' => 'sometimes|date|after_or_equal:start_date',
             'details' => 'nullable',

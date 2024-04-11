@@ -14,7 +14,7 @@ class CarWashFeeController extends Controller
      */
     public function index()
     {
-        $careWashFees = CarWashFee::with(['createdBy', 'updatedBy', 'productType'])->get();
+        $careWashFees = CarWashFee::with(['createdBy', 'updatedBy', 'carType'])->get();
         return response()->json($careWashFees);
     }
 
@@ -23,7 +23,11 @@ class CarWashFeeController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'fee_amount' => 'required|numeric',
-            'product_type_id' => 'required|exists:product_types,id',
+            'currency' => 'required|string|max:3',
+            'billing_cycle' => 'required|string',
+            'status' => 'required|string',
+            'car_type_id' => 'required|exists:car_types,id',
+            'details' => 'nullable|string',
         ]);
 
         $validated['created_by'] = Auth::id();
@@ -39,18 +43,26 @@ class CarWashFeeController extends Controller
         return response()->json($careWashFee);
     }
 
-    public function update(Request $request, CarWashFee $careWashFee)
+    public function update(Request $request, $id)
     {
+        $carWashFee = CarWashFee::find($id);
+        if (!$carWashFee) {
+            return response()->json(['message' => 'Car wash fee not found'], 404);
+        }
+
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'fee_amount' => 'required|numeric',
-            'product_type_id' => 'required|exists:product_types,id',
+            'name' => 'nullable|string|max:255',
+            'fee_amount' => 'sometimes|numeric',
+            'currency' => 'sometimes|string|max:3',
+            'billing_cycle' => 'sometimes|string',
+            'status' => 'sometimes|string',
+            'car_type_id' => 'sometimes|exists:car_types,id',
         ]);
 
         $validated['updated_by'] = Auth::id();
 
-        $careWashFee->update($validated);
-        return response()->json($careWashFee);
+        $carWashFee->update($validated);
+        return response()->json(['message' => 'Car wash fee updated successfully', 'data' => $carWashFee]);
     }
 
     public function destroy($id)

@@ -11,16 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('villages', function (Blueprint $table) {
+        Schema::create('car_types', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->index();
-            $table->unsignedBigInteger('parish_id');
+            $table->string('name');
+            $table->string('status')->default('active')->index();
+            $table->text('description')->nullable();
+            $table->string('photo_url')->nullable();
             $table->timestamps();
+
+            // Assuming you want to track who created and updated the product type
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
 
-            // Define foreign key constraints
-            $table->foreign('parish_id')->references('id')->on('parishes')->onDelete('cascade');
+            // Foreign key constraints
             $table->foreign('created_by')->references('id')->on('users')->onDelete('SET NULL');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('SET NULL');
         });
@@ -31,6 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('villages');
+        Schema::dropIfExists('car_types');
     }
 };

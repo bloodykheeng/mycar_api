@@ -13,12 +13,19 @@ return new class extends Migration
     {
         Schema::create('parking_fees', function (Blueprint $table) {
             $table->id();
-            $table->decimal('fee_amount', 10, 2); // Assuming parking fee is a fixed amount
-            $table->string('currency')->default('UGX');
-            $table->string('billing_cycle')->default('daily');
+            $table->string('name')->nullable();
+            $table->string('currency')->nullable();
+            $table->string('billing_cycle')->nullable();
+            $table->string('status')->default('active');
+            $table->decimal('fee_amount', 15, 2);
+            $table->unsignedBigInteger('car_type_id');
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
+
+            $table->foreign('car_type_id')->references('id')->on('car_types')->onDelete('cascade');
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('set null');
+            $table->foreign('updated_by')->references('id')->on('users')->onDelete('set null');
         });
     }
 

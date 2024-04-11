@@ -2,22 +2,22 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Models\ProductType;
+use App\Models\CarType;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 
-class ProductTypeController extends Controller
+class CarTypeController extends Controller
 {
     // Display a listing of product types
     public function index()
     {
-        $productTypes = ProductType::with(['creator', 'updater'])->get();
-        return response()->json($productTypes);
+        $carTypes = CarType::with(['creator', 'updater'])->get();
+        return response()->json($carTypes);
     }
 
-    // Store a newly created product type
+    // Store a newly created car type
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -29,10 +29,10 @@ class ProductTypeController extends Controller
 
         $photoUrl = null;
         if ($request->hasFile('photo')) {
-            $photoUrl = $this->uploadPhoto($request->file('photo'), 'product_type_photos');
+            $photoUrl = $this->uploadPhoto($request->file('photo'), 'car_type_photos');
         }
 
-        $productType = ProductType::create([
+        $carType = CarType::create([
             'name' => $validatedData['name'],
             'description' => $validatedData['description'],
             'status' => $validatedData['status'],
@@ -41,27 +41,27 @@ class ProductTypeController extends Controller
             'updated_by' => Auth::id(),
         ]);
 
-        return response()->json(['message' => 'Product type created successfully', 'data' => $productType]);
+        return response()->json(['message' => 'car type created successfully', 'data' => $carType]);
     }
 
-    // Display the specified product type
+    // Display the specified car type
     public function show($id)
     {
-        $productType = ProductType::with(['creator', 'updater'])->find($id);
+        $carType = CarType::with(['creator', 'updater'])->find($id);
 
-        if (!$productType) {
-            return response()->json(['message' => 'Product type not found'], 404);
+        if (!$carType) {
+            return response()->json(['message' => 'car type not found'], 404);
         }
 
-        return response()->json($productType);
+        return response()->json($carType);
     }
 
-    // Update the specified product type
+    // Update the specified car type
     public function update(Request $request, $id)
     {
-        $productType = ProductType::find($id);
-        if (!$productType) {
-            return response()->json(['message' => 'Product type not found'], 404);
+        $carType = CarType::find($id);
+        if (!$carType) {
+            return response()->json(['message' => 'car type not found'], 404);
         }
 
         $validatedData = $request->validate([
@@ -71,16 +71,16 @@ class ProductTypeController extends Controller
             'photo' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        $photoUrl = $productType->photo_url;
+        $photoUrl = $carType->photo_url;
         if ($request->hasFile('photo')) {
             // Delete old photo if it exists
             if ($photoUrl) {
                 $this->deletePhoto($photoUrl);
             }
-            $photoUrl = $this->uploadPhoto($request->file('photo'), 'product_type_photos');
+            $photoUrl = $this->uploadPhoto($request->file('photo'), 'car_type_photos');
         }
 
-        $productType->update([
+        $carType->update([
             'name' => $validatedData['name'],
             'description' => $validatedData['description'],
             'status' => $request->status,
@@ -88,26 +88,26 @@ class ProductTypeController extends Controller
             'updated_by' => Auth::id(),
         ]);
 
-        return response()->json(['message' => 'Product type updated successfully', 'data' => $productType]);
+        return response()->json(['message' => 'car type updated successfully', 'data' => $carType]);
     }
 
-    // Remove the specified product type
+    // Remove the specified car type
     public function destroy($id)
     {
-        $productType = ProductType::find($id);
+        $carType = CarType::find($id);
 
-        if (!$productType) {
-            return response()->json(['message' => 'Product type not found'], 404);
+        if (!$carType) {
+            return response()->json(['message' => 'car type not found'], 404);
         }
 
         // Delete associated photo file
-        if ($productType->photo_url) {
-            $this->deletePhoto($productType->photo_url);
+        if ($carType->photo_url) {
+            $this->deletePhoto($carType->photo_url);
         }
 
-        $productType->delete();
+        $carType->delete();
 
-        return response()->json(['message' => 'Product type deleted successfully']);
+        return response()->json(['message' => 'car type deleted successfully']);
     }
 
     private function uploadPhoto($photo, $folderPath)

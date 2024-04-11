@@ -13,12 +13,9 @@ return new class extends Migration
     {
         Schema::create('parkings', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('parking_fee_id');
             $table->unsignedBigInteger('car_id');
             $table->unsignedBigInteger('vendor_id')->nullable();
-            $table->string('currency')->nullable();
-            $table->string('billing_cycle')->nullable();
-            $table->string('status')->default('active');
-            $table->decimal('fee_amount', 15, 2);
             $table->date('start_date')->index();
             $table->date('end_date')->index()->nullable();
             $table->text('details')->nullable();
@@ -27,7 +24,8 @@ return new class extends Migration
             $table->timestamps();
 
             // Define foreign key constraints
-            $table->foreign('car_id')->references('id')->on('products')->onDelete('cascade');
+            $table->foreign('car_id')->references('id')->on('cars')->onDelete('cascade');
+            $table->foreign('parking_fee_id')->references('id')->on('parking_fees')->onDelete('cascade');
             $table->foreign('vendor_id')->references('id')->on('vendors')->onDelete('set null');
             $table->foreign('created_by')->references('id')->on('users')->onDelete('set null');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('set null');

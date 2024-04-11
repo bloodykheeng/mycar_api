@@ -74,27 +74,35 @@ class AuthController extends Controller
             return response()->json(['message' => 'User is not logged in'], 401);
         }
 
-        $user = User::where('id', Auth::user()->id)
-            ->firstOrFail();
+        /** @var \App\Models\User */
+        $user = Auth::user();
 
         // Retrieve the token
-        $token = $user->tokens->first()->token; // Assuming each user has only one token
+        $token = $user->tokens->first()->token ?? ''; // Adjusted to handle potential null value
 
-        return response()->json([
+        $response = [
             'message' => 'Hi ' . $user->name . ', welcome to home',
             'access_token' => $token,
             'token_type' => 'Bearer',
             'name' => $user->name,
             'lastlogin' => $user->lastlogin,
             'email' => $user->email,
-            'permissions' => $user->getAllPermissions()->map(function ($item) {
-                return $item->name;
-            }),
+            'photo_url' => $user->photo_url,
+            'permissions' => $user->getAllPermissions()->pluck('name'), // pluck for simplified array
             'role' => $user->getRoleNames()->first() ?? "",
+        ];
 
-        ]);
+        // Check if the user is a Vendor and include vendor details
+        if ($user->hasRole('Vendor')) {
+            $vendor = $user->vendors()->first(); // Assuming there's a vendors() relationship
+            $response['vendor'] = [
+                'id' => $vendor->vendor_id ?? null,
+                'name' => $vendor->vendor->name ?? 'Unknown Vendor', // Assuming there's a name attribute on the vendor
+            ];
+        }
+
+        return response()->json($response);
     }
-
 
 
 
@@ -103,31 +111,40 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         if (!Auth::attempt($request->only('email', 'password'))) {
-            return response()->json(['message' => 'Invalid Email Or Password'], 404);
+            return response()->json(['message' => 'Invalid Email Or Password'], 401);
         }
 
         $user = User::where('email', $request['email'])->firstOrFail();
 
         // Check if the user's status is active
         if ($user->status !== 'active') {
-            return response()->json(['message' => 'Account is not active'], 403); // or another appropriate status code
+            return response()->json(['message' => 'Account is not active'], 403);
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        return response()->json([
+        $response = [
             'message' => 'Hi ' . $user->name . ', welcome to home',
             'access_token' => $token,
             'token_type' => 'Bearer',
             'name' => $user->name,
+            'photo_url' => $user->photo_url,
             'lastlogin' => $user->lastlogin,
             'email' => $user->email,
-            'permissions' => $user->getAllPermissions()->map(function ($item) {
-                return $item->name;
-            }),
+            'permissions' => $user->getAllPermissions()->pluck('name'),
             'role' => $user->getRoleNames()->first() ?? "",
+        ];
 
-        ]);
+        // Include vendor details if the user is a Vendor
+        if ($user->hasRole('Vendor')) {
+            $vendor = $user->vendors()->first(); // Assuming there's a vendors() relationship
+            $response['vendor'] = [
+                'id' => $vendor->vendor_id ?? null,
+                'name' => $vendor->vendor->name ?? 'Unknown Vendor',
+            ];
+        }
+
+        return response()->json($response);
     }
 
 
@@ -138,11 +155,13 @@ class AuthController extends Controller
     // method for user logout and delete token
     public function logout()
     {
-        auth()->user()->tokens()->delete();
+        /** @var \App\Models\User */
+        $user = auth()->user(); // Get the authenticated user
 
-        return [
-            'message' => 'You have successfully logged out and the token was successfully deleted'
-        ];
+        // Delete all tokens for the user
+        $user->tokens()->delete();
+
+        return response()->json(['message' => 'Logged out successfully']);
     }
 
     /**

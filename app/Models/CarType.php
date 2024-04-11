@@ -5,12 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ProductType extends Model
+class CarType extends Model
 {
     use HasFactory;
 
     // Define the table if it's not the standard naming convention
-    protected $table = 'product_types';
+    protected $table = 'car_types';
 
     // Specify the fields that are mass assignable
     protected $fillable = [

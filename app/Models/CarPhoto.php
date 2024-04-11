@@ -5,30 +5,29 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ProductVideo extends Model
+class CarPhoto extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'product_id',
-        'video_url',
+        'car_id',
+        'photo_url',
         'caption',
         'created_by',
         'updated_by'
     ];
 
-    public function product()
+    public function car()
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Car::class, 'car_id');
     }
 
-    // If you have User model relationships for created_by and updated_by
-    public function creator()
+    public function createdBy()
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function updater()
+    public function updatedBy()
     {
         return $this->belongsTo(User::class, 'updated_by');
     }

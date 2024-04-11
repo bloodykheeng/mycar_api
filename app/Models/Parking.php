@@ -9,11 +9,8 @@ class Parking extends Model
 {
     protected $fillable = [
         'car_id',
+        'parking_fee_id',
         'vendor_id',
-        'currency',
-        'billing_cycle',
-        'status',
-        'fee_amount',
         'start_date',
         'end_date',
         'details',
@@ -24,10 +21,13 @@ class Parking extends Model
     // Define relationships
     public function car()
     {
-        return $this->belongsTo(Product::class, 'car_id');
+        return $this->belongsTo(Car::class, 'car_id');
     }
 
-
+    public function parkingFee()
+    {
+        return $this->belongsTo(ParkingFee::class, 'parking_fee_id');
+    }
 
     public function vendor()
     {
@@ -46,24 +46,38 @@ class Parking extends Model
 
     // Other model methods...
 
-    protected $appends = ['parking_charge']; // Add the custom attribute to the model's array form
+    protected $appends = ['parking_charge', 'status']; // Add the custom attribute to the model's array form
 
+    // Add a custom accessor for status
+    public function getStatusAttribute()
+    {
+        $now = Carbon::now();
+        $startDate = Carbon::parse($this->start_date);
+
+        if ($startDate->isFuture()) {
+            return 'future';
+        } elseif ($startDate->isPast() && (!$this->end_date || Carbon::parse($this->end_date)->isFuture())) {
+            return 'active';
+        }
+
+        return 'deactive';
+    }
     public function getParkingChargeAttribute()
     {
         $startDate = Carbon::parse($this->start_date);
         $endDate = $this->end_date ? Carbon::parse($this->end_date) : Carbon::now();
-        $feePerDay = $this->fee_amount;
 
-        if ($this->status === 'active' && !$this->end_date) {
+        // Access the fee_amount from the related ParkingFee model
+        $feePerDay = $this->parkingFee->fee_amount ?? 0;
+
+        if (!$this->end_date) {
             $endDate = Carbon::now();
-        } elseif ($this->end_date) {
-            $endDate = Carbon::parse($this->end_date);
         }
 
         $daysParked = (int) $startDate->diffInDays($endDate);
 
-        // If the start date is in the future, return 0 to prevent negative charges
-        if ($startDate->isFuture()) {
+        // If the start date is in the future or there is no fee set, return 0 to prevent negative charges
+        if ($startDate->isFuture() || $feePerDay == 0) {
             return 0;
         }
 

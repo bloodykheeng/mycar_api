@@ -15,7 +15,25 @@ class SparePartController extends Controller
      */
     public function index()
     {
-        $spareParts = SparePart::with(['sparePartType', 'vendor', 'createdBy', 'updatedBy'])->get();
+        // Start building the query
+        $query = SparePart::with(['sparePartType', 'vendor', 'createdBy', 'updatedBy']);
+
+        // Get the currently authenticated user
+        /** @var \App\Models\User */
+        $user = Auth::user();
+
+        // Check if the user has the 'Vendor' role and apply the filter
+        if ($user->hasRole('Vendor')) {
+            // Assuming the UserVendor model defines the relationship to get the vendor id
+            $vendorId = $user->vendors->vendor_id ?? null;
+            if ($vendorId) {
+                $query->where('vendor_id', $vendorId);
+            }
+        }
+
+        // Execute the query and get the results
+        $spareParts = $query->get();
+
         return response()->json($spareParts);
     }
 

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('office_fees', function (Blueprint $table) {
             $table->id();
-            $table->string('service_description')->nullable(); 
+            $table->string('service_description')->nullable();
             $table->string('photo_url')->nullable();
             $table->decimal('fee_amount', 10, 2);
             $table->string('currency')->default('UGX');

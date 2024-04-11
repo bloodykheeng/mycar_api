@@ -1,30 +1,33 @@
 <?php
 
-use App\Http\Controllers\API\CarWashFeeController;
-use App\Http\Controllers\API\CarWashOrderController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\API\CarController;
 use App\Http\Controllers\API\UserController;
-use App\Http\Controllers\API\CountyController;
+
 use App\Http\Controllers\API\GarageController;
-use App\Http\Controllers\API\ParishController;
+
 use App\Http\Controllers\API\VendorController;
+use App\Http\Controllers\API\CarTypeController;
 use App\Http\Controllers\API\ParkingController;
-use App\Http\Controllers\API\ProductController;
-use App\Http\Controllers\API\ServiceController;
-use App\Http\Controllers\API\VillageController;
-use App\Http\Controllers\API\DistrictController;
+
+
+use App\Http\Controllers\API\CarBrandController;
+
 use App\Http\Controllers\API\OfficeFeeController;
 use App\Http\Controllers\API\SparePartController;
-use App\Http\Controllers\API\SubCountyController;
+
 use App\Http\Controllers\API\UserRolesController;
+
+
 use App\Http\Controllers\PasswordResetController;
+use App\Http\Controllers\API\CarWashFeeController;
+
+
 use App\Http\Controllers\API\ParkingFeeController;
-use App\Http\Controllers\API\ProductTypeController;
-use App\Http\Controllers\API\ServiceTypeController;
+use App\Http\Controllers\API\CarWashOrderController;
 use App\Http\Controllers\API\GarageReviewController;
-use App\Http\Controllers\API\ProductBrandController;
 use App\Http\Controllers\API\SparePartTypeController;
 use App\Http\Controllers\API\MotorThirdPartyController;
 use App\Http\Controllers\API\UserPermissionsController;
@@ -62,25 +65,16 @@ Route::group(
         // Vendor routes
         Route::apiResource('vendors', VendorController::class);
 
-        // service types
-        Route::apiResource('service-types', ServiceTypeController::class);
 
 
-        // Standard RESTful resource routes for services
-        Route::apiResource('services', ServiceController::class);
+        // car type
+        Route::resource('car-types', CarTypeController::class);
 
-        // Additional routes for active and inactive services
-        Route::get('services/active', [ServiceController::class, 'active'])->name('services.active');
-        Route::get('services/inactive', [ServiceController::class, 'inactive'])->name('services.inactive');
+        // carBrand routes
+        Route::apiResource('car-brands', CarBrandController::class);
 
-        // Product type
-        Route::resource('product-types', ProductTypeController::class);
-
-        // ProductBrand routes
-        Route::apiResource('product-brands', ProductBrandController::class);
-
-        // Product routes
-        Route::apiResource('products', ProductController::class);
+        // car routes
+        Route::apiResource('cars', CarController::class);
 
         // ======================  Spare Part Types =====================
         Route::resource('spare-part-types', SparePartTypeController::class);
@@ -100,31 +94,18 @@ Route::group(
         // ====================== Office Fees ===========================
         Route::resource('office-fees', OfficeFeeController::class);
 
+        // ParkingFee routes
+        Route::apiResource('parking-fees', ParkingFeeController::class);
+
         //=================== parking =========================
         Route::resource('parking', ParkingController::class);
 
-        // ====================== Parking Fees ===========================
-        Route::resource('parking-fees', ParkingFeeController::class);
 
         // ====================== Car Wash Fees ===========================
         Route::resource('car-wash-fees', CarWashFeeController::class);
 
         // ====================== Car Wash Orders ===========================
         Route::resource('car-wash-orders', CarWashOrderController::class);
-
-
-        //======================= locations =============================
-
-        Route::resource('districts', DistrictController::class);
-
-        Route::resource('county', CountyController::class)->except(['create', 'edit']);
-
-        Route::resource('subcounty', SubCountyController::class)->except(['create', 'edit']);
-
-        Route::resource('parish', ParishController::class)->except(['create', 'edit']);
-
-        Route::resource('village', VillageController::class)->except(['create', 'edit']);
-
 
 
 

@@ -24,3 +24,19 @@ yarn-error.log
 /public/user_photos/*
 /public/vendor_photos/*
 
+
+/public/car_brand_logos/*
+/public/car_photos/*
+/public/car_type_photos/*
+/public/car_videos/*
+/public/garage_photos/*
+/public/motor_third_party_photos/*
+/public/product_brand_logos/*
+/public/product_photos/*
+/public/product_type_photos/*
+/public/product_videos/*
+/public/spare_part_photos/*
+/public/spare_part_type_photos/*
+/public/user_photos/*
+/public/vendor_photos/*
+
