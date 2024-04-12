@@ -39,4 +39,5 @@ yarn-error.log
 /public/spare_part_type_photos/*
 /public/user_photos/*
 /public/vendor_photos/*
+/public/dashboard_slider_photos/*
 
