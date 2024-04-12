@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('address')->nullable();
             $table->string('photo_url')->nullable();
             $table->boolean('availability')->default(true);
+            $table->string('status')->default('active');
             $table->string('opening_hours')->nullable();
             $table->text('special_features')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();

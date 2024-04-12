@@ -8,29 +8,32 @@ use App\Http\Controllers\API\UserController;
 
 use App\Http\Controllers\API\GarageController;
 
+use App\Http\Controllers\API\OfficeController;
 use App\Http\Controllers\API\VendorController;
 use App\Http\Controllers\API\CarTypeController;
+
+
 use App\Http\Controllers\API\ParkingController;
 
-
 use App\Http\Controllers\API\CarBrandController;
-
 use App\Http\Controllers\API\OfficeFeeController;
+
 use App\Http\Controllers\API\SparePartController;
 
+
 use App\Http\Controllers\API\UserRolesController;
-
-
 use App\Http\Controllers\PasswordResetController;
+
+
 use App\Http\Controllers\API\CarWashFeeController;
-
-
+use App\Http\Controllers\API\OfficeRentController;
 use App\Http\Controllers\API\ParkingFeeController;
 use App\Http\Controllers\API\CarWashOrderController;
 use App\Http\Controllers\API\GarageReviewController;
 use App\Http\Controllers\API\SparePartTypeController;
 use App\Http\Controllers\API\MotorThirdPartyController;
 use App\Http\Controllers\API\UserPermissionsController;
+use App\Http\Controllers\API\DashboardSliderPhotoController;
 
 // Public Routes
 Route::post('/register', [AuthController::class, 'register']);
@@ -92,7 +95,14 @@ Route::group(
         Route::resource('garage-review', GarageReviewController::class);
 
         // ====================== Office Fees ===========================
-        Route::resource('office-fees', OfficeFeeController::class);
+        Route::resource('office-fees', OfficeController::class);
+        Route::resource('office-rents', OfficeRentController::class);
+
+        //================ Dashboard Slider ======================
+        Route::resource('dashboard-slider-photos', DashboardSliderPhotoController::class);
+
+
+
 
         // ParkingFee routes
         Route::apiResource('parking-fees', ParkingFeeController::class);

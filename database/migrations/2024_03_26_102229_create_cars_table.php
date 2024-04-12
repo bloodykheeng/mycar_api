@@ -25,6 +25,7 @@ return new class extends Migration
             $table->integer('quantity')->default(0);
             $table->string('visibility')->default('public')->index();
             $table->string('status')->default('sale')->index();
+            $table->string('condition')->default('new')->index();
             $table->unsignedBigInteger('car_brand_id')->nullable();
             $table->unsignedBigInteger('car_type_id')->nullable();
             $table->unsignedBigInteger('vendor_id')->nullable(); // Add this line

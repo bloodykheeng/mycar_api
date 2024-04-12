@@ -11,19 +11,23 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('office_fees', function (Blueprint $table) {
+        Schema::create('offices', function (Blueprint $table) {
             $table->id();
-            $table->string('service_description')->nullable();
-            $table->string('photo_url')->nullable();
-            $table->decimal('fee_amount', 10, 2);
-            $table->string('currency')->default('UGX');
-            $table->text('payment_terms')->nullable();
-            $table->text('notes')->nullable();
-            $table->integer('room_capacity')->nullable();
+            $table->string('name');
+            $table->string('currency')->nullable();
+            $table->text('description');
             $table->string('billing_cycle')->default('monthly');
+            $table->integer('size');
+            $table->string('status')->default('active');
+            $table->text('payment_terms')->nullable();
+            $table->integer('room_capacity')->nullable();
+            $table->decimal('fee_amount', 10, 2);
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
+
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('set null');
+            $table->foreign('updated_by')->references('id')->on('users')->onDelete('set null');
         });
     }
 
@@ -32,6 +36,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('office_fees');
+        Schema::dropIfExists('offices');
     }
 };

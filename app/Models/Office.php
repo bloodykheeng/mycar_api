@@ -5,29 +5,37 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class OfficeFee extends Model
+class Office extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'service_description',
-        'photo_url',
-        'fee_amount',
+        'name',
+        'description',
         'currency',
-        'payment_terms',
-        'notes',
-        'room_capacity',
         'billing_cycle',
+        'size',
+        'payment_terms',
+        'room_capacity',
+        'fee_amount',
         'created_by',
         'updated_by',
     ];
 
-    public function createdBy()
+    // Relationship with OfficeRent
+    public function officeRents()
+    {
+        return $this->hasMany(OfficeRent::class);
+    }
+
+    // Relationship with User (Creator)
+    public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function updatedBy()
+    // Relationship with User (Updater)
+    public function updater()
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
