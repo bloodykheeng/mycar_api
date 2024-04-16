@@ -21,6 +21,7 @@ class Car extends Model
         'color',
         'quantity',
         'visibility',
+        'condition',
         'status',
         'car_brand_id',
         'car_type_id',

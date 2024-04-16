@@ -14,6 +14,7 @@ class SparePart extends Model
         'photo_url',
         'description',
         'price',
+        'condition',
         'approval_status',
         'spare_part_type_id',
         'vendor_id',

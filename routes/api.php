@@ -59,9 +59,13 @@ Route::post('/reset-password', [PasswordResetController::class, 'handlestoringNe
 // })->middleware('auth:sanctum');
 
 
+//========================= puclic routes ===================
+// Public routes for viewing dashboard slider photos
+Route::resource('dashboard-slider-photos', DashboardSliderPhotoController::class)->only(['index', 'show']);
+// car type
+Route::resource('car-types', CarTypeController::class)->only(['index', 'show']);
 
-
-// private routes
+//=============================== private routes ==================================
 Route::group(
     ['middleware' => ['auth:sanctum']],
     function () {
@@ -71,7 +75,7 @@ Route::group(
 
 
         // car type
-        Route::resource('car-types', CarTypeController::class);
+        Route::resource('car-types', CarTypeController::class)->except(['index', 'show']);
 
         // carBrand routes
         Route::apiResource('car-brands', CarBrandController::class);
@@ -99,7 +103,8 @@ Route::group(
         Route::resource('office-rents', OfficeRentController::class);
 
         //================ Dashboard Slider ======================
-        Route::resource('dashboard-slider-photos', DashboardSliderPhotoController::class);
+        Route::resource('dashboard-slider-photos', DashboardSliderPhotoController::class)
+            ->except(['index', 'show']);
 
 
 

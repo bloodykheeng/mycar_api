@@ -25,6 +25,7 @@ class DashboardSliderPhotoController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
+            'title' => 'nullable|string',
             'photo_url' => 'nullable|string',
             'status' => 'required|string',
             'caption' => 'nullable|string',
@@ -37,6 +38,7 @@ class DashboardSliderPhotoController extends Controller
 
         $photo = DashboardSliderPhoto::create([
             'photo_url' => $photoUrl,
+            'title' => $validatedData['title'],
             'status' => $validatedData['status'],
             'caption' => $validatedData['caption'],
             'created_by' => Auth::id(),
@@ -69,6 +71,7 @@ class DashboardSliderPhotoController extends Controller
         }
 
         $validatedData = $request->validate([
+            'title' => 'nullable|string',
             'photo_url' => 'nullable|string',
             'status' => 'required|string',
             'caption' => 'nullable|string',

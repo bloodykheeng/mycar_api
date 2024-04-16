@@ -17,13 +17,14 @@ return new class extends Migration
             $table->string('photo_url')->nullable();
             $table->string('description')->nullable();
             $table->decimal('price', 8, 2);
+            $table->string('condition')->default('new')->index();
             $table->enum('approval_status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->unsignedBigInteger('spare_part_type_id')->nullable();
             $table->unsignedBigInteger('vendor_id')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
-        
+
             // Define foreign key constraints
             $table->foreign('spare_part_type_id')->references('id')->on('spare_part_types')->onDelete('cascade');
             $table->foreign('vendor_id')->references('id')->on('vendors')->onDelete('cascade');

@@ -11,6 +11,7 @@ class DashboardSliderPhoto extends Model
 
     // Define the fillable attributes
     protected $fillable = [
+        'title',
         'photo_url',
         'caption',
         'status',
