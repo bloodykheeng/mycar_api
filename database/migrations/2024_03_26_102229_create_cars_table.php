@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->text('description')->nullable();
             $table->string('make')->nullable();
+            $table->string('slug')->unique()->index();
             $table->string('model')->nullable();
             $table->year('year')->nullable();
             $table->integer('mileage')->nullable();

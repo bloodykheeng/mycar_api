@@ -65,6 +65,10 @@ Route::resource('dashboard-slider-photos', DashboardSliderPhotoController::class
 // car type
 Route::resource('car-types', CarTypeController::class)->only(['index', 'show']);
 
+
+// car routes
+Route::apiResource('cars', CarController::class)->only(['index', 'show']);
+
 //=============================== private routes ==================================
 Route::group(
     ['middleware' => ['auth:sanctum']],
@@ -81,7 +85,7 @@ Route::group(
         Route::apiResource('car-brands', CarBrandController::class);
 
         // car routes
-        Route::apiResource('cars', CarController::class);
+        Route::apiResource('cars', CarController::class)->except(['index', 'show']);
 
         // ======================  Spare Part Types =====================
         Route::resource('spare-part-types', SparePartTypeController::class);

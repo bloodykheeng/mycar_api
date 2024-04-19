@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('logo_url')->nullable();
+            $table->string('slug')->unique()->index();
             $table->text('description')->nullable();
             $table->string('status')->default('active');
             $table->unsignedBigInteger('created_by')->nullable();

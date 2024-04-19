@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('spare_part_types', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('slug')->unique()->index();
             $table->string('status')->default('active')->index();
             $table->string('photo_url')->nullable();
             $table->string('description')->nullable();

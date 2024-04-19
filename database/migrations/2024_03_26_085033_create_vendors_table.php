@@ -10,6 +10,7 @@ class CreateVendorsTable extends Migration
     {
         Schema::create('vendors', function (Blueprint $table) {
             $table->id();
+            $table->string('slug')->unique()->index();
             $table->string('name');
             $table->text('description')->nullable();
             $table->string('photo_url')->nullable();

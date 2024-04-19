@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('offices', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('slug')->unique()->index();
             $table->string('currency')->nullable();
             $table->text('description');
             $table->string('billing_cycle')->default('monthly');

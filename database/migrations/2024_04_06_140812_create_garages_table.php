@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('address')->nullable();
+            $table->string('slug')->unique()->index();
             $table->string('photo_url')->nullable();
             $table->boolean('availability')->default(true);
             $table->string('status')->default('active');

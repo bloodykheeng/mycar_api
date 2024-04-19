@@ -24,7 +24,7 @@ class CarController extends Controller
         $user = Auth::user();
 
         // Check if the user has the 'Vendor' role and apply the filter
-        if ($user->hasRole('Vendor')) {
+        if (isset($user) && $user->hasRole('Vendor')) {
             // Assuming the UserVendor model defines the relationship to get the vendor id
             $vendorId = $user->vendors->vendor_id ?? null;
             if ($vendorId) {

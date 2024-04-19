@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('dashboard_slider_photos', function (Blueprint $table) {
             $table->id();
             $table->string('title');
+            $table->string('slug')->unique()->index();
             $table->string('photo_url'); // URL of the photo
             $table->text('caption')->nullable(); // Caption for the photo, can be nullable
             $table->string('status')->default('active');

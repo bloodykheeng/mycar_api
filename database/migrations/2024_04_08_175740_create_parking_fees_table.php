@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name')->nullable();
             $table->string('currency')->nullable();
+            $table->string('slug')->unique()->index();
             $table->string('billing_cycle')->nullable();
             $table->string('status')->default('active');
             $table->decimal('fee_amount', 15, 2);

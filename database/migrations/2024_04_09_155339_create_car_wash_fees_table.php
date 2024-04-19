@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('car_wash_fees', function (Blueprint $table) {
             $table->id();
             $table->string('name')->nullable();
+            $table->string('slug')->unique()->index();
             $table->decimal('fee_amount', 15, 2);
             $table->string('currency')->nullable();
             $table->string('billing_cycle')->nullable();
