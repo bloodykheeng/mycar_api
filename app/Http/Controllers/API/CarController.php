@@ -38,6 +38,21 @@ class CarController extends Controller
         return response()->json($cars);
     }
 
+    // New function to get car by slug
+    public function getBySlug($slug)
+    {
+        // Retrieve the car along with related details
+        $car = Car::with(['brand', 'photos', 'videos', 'type', 'vendor', 'createdBy', 'updatedBy'])
+            ->where('slug', $slug)
+            ->first();
+
+        if (!$car) {
+            return response()->json(['message' => 'Car not found'], 404);
+        }
+
+        return response()->json($car);
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([

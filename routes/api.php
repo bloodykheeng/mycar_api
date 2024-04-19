@@ -68,6 +68,7 @@ Route::resource('car-types', CarTypeController::class)->only(['index', 'show']);
 
 // car routes
 Route::apiResource('cars', CarController::class)->only(['index', 'show']);
+Route::get('/car/{slug}', [CarController::class, 'getBySlug']);
 
 //=============================== private routes ==================================
 Route::group(
