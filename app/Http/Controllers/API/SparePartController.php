@@ -13,7 +13,7 @@ class SparePartController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         // Start building the query
         $query = SparePart::with(['sparePartType', 'vendor', 'createdBy', 'updatedBy']);
@@ -29,6 +29,26 @@ class SparePartController extends Controller
             if ($vendorId) {
                 $query->where('vendor_id', $vendorId);
             }
+        }
+
+        // Apply filters from request
+        if (!empty($request->search)) { // Check if search is not null and not an empty string
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+
+        if (!empty($request->condition)) { // Check if condition is not null and not an empty string
+            $query->where('condition', $request->condition);
+        }
+
+        if (!empty($request->maxPrice)) { // Check if maxPrice is not null and not an empty string
+            $query->where('price', '<=', $request->maxPrice);
+        }
+
+        if (!empty($request->spare_part_type)) { // Check if car_type is not null and not an empty string
+            // Assuming `car_type` is the slug of the type
+            $query->whereHas('sparePartType', function ($q) use ($request) {
+                $q->where('slug', $request->spare_part_type);
+            });
         }
 
         // Execute the query and get the results
@@ -85,7 +105,7 @@ class SparePartController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string',
-            'photo' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
+            // 'photo' => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
             'description' => 'nullable|string',
             'condition' => 'nullable|string|max:255',
             'price' => 'required|numeric',
