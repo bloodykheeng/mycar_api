@@ -70,6 +70,10 @@ Route::resource('car-types', CarTypeController::class)->only(['index', 'show']);
 Route::apiResource('cars', CarController::class)->only(['index', 'show']);
 Route::get('/car/{slug}', [CarController::class, 'getBySlug']);
 
+// ======================  Spare Part Types =====================
+Route::resource('spare-part-types', SparePartTypeController::class)->only(['index', 'show']);
+Route::resource('spare-parts', SparePartController::class)->only(['index', 'show']);
+
 //=============================== private routes ==================================
 Route::group(
     ['middleware' => ['auth:sanctum']],
@@ -89,10 +93,10 @@ Route::group(
         Route::apiResource('cars', CarController::class)->except(['index', 'show']);
 
         // ======================  Spare Part Types =====================
-        Route::resource('spare-part-types', SparePartTypeController::class);
+        Route::resource('spare-part-types', SparePartTypeController::class)->except(['index', 'show']);
 
         // ====================== Spare Parts ===========================
-        Route::resource('spare-parts', SparePartController::class);
+        Route::resource('spare-parts', SparePartController::class)->except(['index', 'show']);
 
         // ====================== Motor Third Party =====================
         Route::resource('motor-third-parties', MotorThirdPartyController::class);
