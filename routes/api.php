@@ -73,6 +73,7 @@ Route::get('/car/{slug}', [CarController::class, 'getBySlug']);
 // ======================  Spare Part Types =====================
 Route::resource('spare-part-types', SparePartTypeController::class)->only(['index', 'show']);
 Route::resource('spare-parts', SparePartController::class)->only(['index', 'show']);
+Route::get('/spare-part/{slug}', [SparePartController::class, 'getBySlug']);
 
 //=============================== private routes ==================================
 Route::group(

@@ -57,6 +57,20 @@ class SparePartController extends Controller
         return response()->json($spareParts);
     }
 
+    // New function to get car by slug
+    public function getBySlug($slug)
+    {
+        // Retrieve the car along with related details
+        $car = SparePart::with(['sparePartType', 'vendor', 'createdBy', 'updatedBy'])->where('slug', $slug)
+            ->first();
+
+        if (!$car) {
+            return response()->json(['message' => 'Spare part not found'], 404);
+        }
+
+        return response()->json($car);
+    }
+
     public function store(Request $request)
     {
 
