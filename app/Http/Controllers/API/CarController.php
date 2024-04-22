@@ -32,6 +32,27 @@ class CarController extends Controller
             }
         }
 
+
+        // Apply filters from request
+        if (!empty($request->search)) { // Check if search is not null and not an empty string
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+
+        if (!empty($request->condition)) { // Check if condition is not null and not an empty string
+            $query->where('condition', $request->condition);
+        }
+
+        if (!empty($request->maxPrice)) { // Check if maxPrice is not null and not an empty string
+            $query->where('price', '<=', $request->maxPrice);
+        }
+
+        if (!empty($request->car_type)) { // Check if car_type is not null and not an empty string
+            // Assuming `car_type` is the slug of the type
+            $query->whereHas('type', function ($q) use ($request) {
+                $q->where('slug', $request->car_type);
+            });
+        }
+
         // Execute the query and get the results
         $cars = $query->get();
 
