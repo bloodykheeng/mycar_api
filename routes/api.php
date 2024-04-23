@@ -75,6 +75,13 @@ Route::resource('spare-part-types', SparePartTypeController::class)->only(['inde
 Route::resource('spare-parts', SparePartController::class)->only(['index', 'show']);
 Route::get('/spare-part/{slug}', [SparePartController::class, 'getBySlug']);
 
+Route::resource('garages', GarageController::class)->only(['index', 'show']);
+Route::resource('motor-third-parties', MotorThirdPartyController::class)->only(['index', 'show']);
+
+
+
+
+
 //=============================== private routes ==================================
 Route::group(
     ['middleware' => ['auth:sanctum']],
@@ -100,10 +107,10 @@ Route::group(
         Route::resource('spare-parts', SparePartController::class)->except(['index', 'show']);
 
         // ====================== Motor Third Party =====================
-        Route::resource('motor-third-parties', MotorThirdPartyController::class);
+        Route::resource('motor-third-parties', MotorThirdPartyController::class)->except(['index', 'show']);
 
         // ====================== Motor Third Party =====================
-        Route::resource('garages', GarageController::class);
+        Route::resource('garages', GarageController::class)->except(['index', 'show']);
 
         // ====================== Garage Review =========================
         Route::resource('garage-review', GarageReviewController::class);

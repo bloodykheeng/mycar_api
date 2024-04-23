@@ -13,9 +13,19 @@ class GarageController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $motorThirdParties = Garage::with(['createdByUser', 'updatedByUser', 'reviews'])->get();
+        // Start building the query
+        $query = Garage::with(['createdByUser', 'updatedByUser', 'reviews']);
+
+        // Apply filters from request
+        if (!empty($request->search)) { // Check if search is not null and not an empty string
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+
+        // Get the result of the query
+        $motorThirdParties = $query->get();
+
         return response()->json($motorThirdParties);
     }
 
