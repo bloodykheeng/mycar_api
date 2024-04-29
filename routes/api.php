@@ -78,6 +78,8 @@ Route::get('/spare-part/{slug}', [SparePartController::class, 'getBySlug']);
 Route::resource('garages', GarageController::class)->only(['index', 'show']);
 Route::resource('motor-third-parties', MotorThirdPartyController::class)->only(['index', 'show']);
 
+Route::apiResource('vendors', VendorController::class)->only(['index', 'show']);
+
 
 
 
@@ -87,7 +89,7 @@ Route::group(
     ['middleware' => ['auth:sanctum']],
     function () {
         // Vendor routes
-        Route::apiResource('vendors', VendorController::class);
+        Route::apiResource('vendors', VendorController::class)->except(['index', 'show']);
 
 
 

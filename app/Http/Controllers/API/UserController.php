@@ -54,6 +54,10 @@ class UserController extends Controller
 
         $user = User::with(["vendors.vendor"])->findOrFail($id);
 
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
         // Adding role name
         $user->role = $user->getRoleNames()->first() ?? "";
 
@@ -195,9 +199,10 @@ class UserController extends Controller
                     ['user_id' => $user->id],
                     ['vendor_id' => $validatedData['vendor_id']]
                 );
-            } else {
-                $user->vendors()->delete();
             }
+            // else {
+            //     $user->vendors()->delete();
+            // }
 
             DB::commit();
             return response()->json(['message' => 'User updated successfully!', 'user' => $user], 200);

@@ -24,11 +24,13 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        $request->validate([
+        $validatedData =  $request->validate([
             'name' => 'required|string|max:255',
+            'status' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
             'role' => 'required|exists:roles,name', // Validate that the role exists
+            'vendor_id' => 'nullable|exists:vendors,id',
         ]);
 
         try {
@@ -40,12 +42,19 @@ class AuthController extends Controller
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
+                'status' => $request->status,
                 'password' => Hash::make($request->password),
                 // Assuming 'status' is a required field, add it if needed
             ]);
 
             // Sync the user's role
             $user->syncRoles([$request->role]);
+
+            // Handle UserVendor relationship
+            if (isset($validatedData['vendor_id'])) {
+                $user->vendors()->create(['vendor_id' => $validatedData['vendor_id']]);
+            }
+
 
 
             $token = $user->createToken('auth_token')->plainTextToken;
@@ -82,11 +91,13 @@ class AuthController extends Controller
 
         $response = [
             'message' => 'Hi ' . $user->name . ', welcome to home',
+            'id' => $user->id,
             'access_token' => $token,
             'token_type' => 'Bearer',
             'name' => $user->name,
             'lastlogin' => $user->lastlogin,
             'email' => $user->email,
+            'status' => $user->status,
             'photo_url' => $user->photo_url,
             'permissions' => $user->getAllPermissions()->pluck('name'), // pluck for simplified array
             'role' => $user->getRoleNames()->first() ?? "",
@@ -125,12 +136,14 @@ class AuthController extends Controller
 
         $response = [
             'message' => 'Hi ' . $user->name . ', welcome to home',
+            'id' => $user->id,
             'access_token' => $token,
             'token_type' => 'Bearer',
             'name' => $user->name,
             'photo_url' => $user->photo_url,
             'lastlogin' => $user->lastlogin,
             'email' => $user->email,
+            'status' => $user->status,
             'permissions' => $user->getAllPermissions()->pluck('name'),
             'role' => $user->getRoleNames()->first() ?? "",
         ];
