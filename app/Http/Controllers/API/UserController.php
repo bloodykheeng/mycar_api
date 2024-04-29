@@ -33,6 +33,11 @@ class UserController extends Controller
             });
         }
 
+        // Filter by role if provided
+        if ($request->has('role') && $request->role !== null) {
+            $query->role($request->role); // This uses the role scope provided by Spatie's permission package
+        }
+
         // Retrieve all users with their one-to-one relationships
         $users = $query->with(["vendors.vendor"])->get();
 

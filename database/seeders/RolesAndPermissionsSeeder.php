@@ -28,6 +28,12 @@ class RolesAndPermissionsSeeder extends Seeder
                 'delete permissions on roles',
                 'view permissions'
             ],
+            'Inspector' => [
+                'view',
+                'create',
+                'update',
+                'delete',
+            ],
             'Vendor' => [
                 'view',
                 'create',

@@ -15,6 +15,7 @@ class Car extends Model
         'description',
         'make',
         'model',
+        'transmission',
         'year',
         'mileage',
         'number_plate',
@@ -34,6 +35,12 @@ class Car extends Model
     public function photos()
     {
         return $this->hasMany(CarPhoto::class, 'car_id');
+    }
+
+
+    public function Inspector()
+    {
+        return $this->hasOne(CarInspector::class, 'car_id');
     }
     public function videos()
     {

@@ -28,11 +28,14 @@ use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\API\CarWashFeeController;
 use App\Http\Controllers\API\OfficeRentController;
 use App\Http\Controllers\API\ParkingFeeController;
+use App\Http\Controllers\API\CarInspectorController;
 use App\Http\Controllers\API\CarWashOrderController;
 use App\Http\Controllers\API\GarageReviewController;
 use App\Http\Controllers\API\SparePartTypeController;
+use App\Http\Controllers\API\InspectionFieldController;
 use App\Http\Controllers\API\MotorThirdPartyController;
 use App\Http\Controllers\API\UserPermissionsController;
+use App\Http\Controllers\API\CarInspectionReportController;
 use App\Http\Controllers\API\DashboardSliderPhotoController;
 
 // Public Routes
@@ -141,8 +144,12 @@ Route::group(
         // ====================== Car Wash Orders ===========================
         Route::resource('car-wash-orders', CarWashOrderController::class);
 
+        //=========================== Car Inspection =======================
+        Route::apiResource('inspection-fields', InspectionFieldController::class);
 
+        Route::apiResource('car-inspection-reports', CarInspectionReportController::class);
 
+        Route::apiResource('car-inspectors', CarInspectorController::class);
 
 
         //======================== User Management =================================

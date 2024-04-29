@@ -220,20 +220,17 @@ class CarController extends Controller
 
     private function deleteAndUploadMedia($car, $request)
     {
-        // Delete existing photos
-        foreach ($car->photos as $photo) {
-            $this->deleteFile($photo->photo_url);
-            $photo->delete();
-        }
 
-        // Delete existing videos
-        foreach ($car->videos as $video) {
-            $this->deleteFile($video->video_url);
-            $video->delete();
-        }
+
 
         // Handle new photo uploads
         if ($request->hasFile('images')) {
+            // Delete existing photos
+            foreach ($car->photos as $photo) {
+                $this->deleteFile($photo->photo_url);
+                $photo->delete();
+            }
+
             $images = $request->file('images');
             $imageCaptions = $request->input('imageCaptions', []);
 
@@ -253,6 +250,13 @@ class CarController extends Controller
 
         // Handle new video uploads
         if ($request->hasFile('videos')) {
+
+            // Delete existing videos
+            foreach ($car->videos as $video) {
+                $this->deleteFile($video->video_url);
+                $video->delete();
+            }
+
             $videos = $request->file('videos');
             $videoCaptions = $request->input('videoCaptions', []);
 
