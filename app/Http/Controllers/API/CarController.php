@@ -17,13 +17,19 @@ class CarController extends Controller
     public function index(Request $request)
     {
         // Start building the query
-        $query = Car::with(['brand', 'photos', 'videos', 'type', 'vendor', 'createdBy', 'updatedBy']);
+        $query = Car::with(['brand', 'photos', 'videos', 'type', 'vendor', 'createdBy', 'updatedBy', 'inspector', 'carInspector.inspector']);
 
         // Get the currently authenticated user
         /** @var \App\Models\User */
-        $user = Auth::user();
+        // $user = Auth::user();
 
-        // Check if the user has the 'Vendor' role and apply the filter
+
+        // Attempt to get the authenticated user if one is available
+        $user = Auth::guard('sanctum')->user();
+
+
+
+        // Check if the user has the 'Vendor' role and apply the filter this user carInspector relation
         if (isset($user) && $user->hasRole('Vendor')) {
             // Assuming the UserVendor model defines the relationship to get the vendor id
             $vendorId = $user->vendors->vendor_id ?? null;
@@ -31,6 +37,25 @@ class CarController extends Controller
                 $query->where('vendor_id', $vendorId);
             }
         }
+
+
+        // Check if the user has the 'Inspector' role and filter cars he is attached to
+
+        if (isset($user) && $user->hasRole('Inspector')) {
+            // Filter to get the cars associated with this inspector
+            $query->whereHas('carInspector', function ($q) use ($user) {
+                $q->where('inspector_id', $user->id);
+            });
+        }
+
+
+        // Check if the user has the 'Inspector' role and filter cars he is attached to theis isere inspector relation
+        // if ($user && $user->hasRole('Inspector')) {
+        //     // Get the cars associated with this inspector
+        //     $query->whereHas('inspector', function ($q) use ($user) {
+        //         $q->where('id', $user->id);
+        //     });
+        // }
 
 
         // Apply filters from request
@@ -63,7 +88,7 @@ class CarController extends Controller
     public function getBySlug($slug)
     {
         // Retrieve the car along with related details
-        $car = Car::with(['brand', 'photos', 'videos', 'type', 'vendor', 'createdBy', 'updatedBy'])
+        $car = Car::with(['brand', 'photos', 'videos', 'type', 'vendor', 'createdBy', 'updatedBy', 'inspector'])
             ->where('slug', $slug)
             ->first();
 
@@ -165,7 +190,7 @@ class CarController extends Controller
 
     public function show($id)
     {
-        $car = Car::with(['brand', 'type', 'photos', 'videos', 'vendor', 'createdBy', 'updatedBy'])->find($id);
+        $car = Car::with(['brand', 'type', 'photos', 'videos', 'vendor', 'createdBy', 'updatedBy', 'inspector'])->find($id);
 
         if (!$car) {
             return response()->json(['message' => 'Car not found'], 404);

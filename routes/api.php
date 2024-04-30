@@ -153,6 +153,8 @@ Route::group(
 
         Route::apiResource('car-inspectors', CarInspectorController::class);
 
+        Route::get('categorized-inspection-fields', [CarInspectionFieldCategoryController::class, 'getCategoryWithFields']);
+
 
         //======================== User Management =================================
         Route::Resource('users', UserController::class);

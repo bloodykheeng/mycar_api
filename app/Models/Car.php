@@ -38,9 +38,21 @@ class Car extends Model
     }
 
 
-    public function Inspector()
+    public function carInspector()
     {
         return $this->hasOne(CarInspector::class, 'car_id');
+    }
+
+    public function inspector()
+    {
+        return $this->hasOneThrough(
+            User::class,
+            CarInspector::class,
+            'car_id',   // Foreign key on CarInspector table
+            'id',       // Foreign key on User table
+            'id',       // Local key on Car table
+            'inspector_id'  // Local key on CarInspector table
+        );
     }
     public function videos()
     {

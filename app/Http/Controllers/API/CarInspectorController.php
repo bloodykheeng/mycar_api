@@ -24,12 +24,23 @@ class CarInspectorController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validated =  $request->validate([
             'car_id' => 'required|integer|exists:cars,id',
             'inspector_id' => 'required|integer|exists:users,id'
         ]);
 
-        DB::transaction(function () use ($request) {
+        DB::transaction(function () use ($request, $validated) {
+
+            // Check if a similar record already exists
+            // $existingCarInspector = CarInspector::where('car_id', $validated['car_id'])
+            //     ->where('inspector_id', $validated['inspector_id'])
+            //     ->first();
+
+            // if ($existingCarInspector) {
+            //     // Optionally handle the logic if the association already exists
+            //     // For example, you can return an informative message or update the existing record
+            //     return response()->json(['message' => 'Inspector already assigned to this car'], 409);
+            // }
             // Check and delete existing record
             $existingCarInspector = CarInspector::where('car_id', $request->car_id)
                 ->where('inspector_id', $request->inspector_id)

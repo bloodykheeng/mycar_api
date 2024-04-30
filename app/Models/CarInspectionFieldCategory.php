@@ -29,4 +29,9 @@ class CarInspectionFieldCategory extends Model
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
+
+    public function inspectionFields()
+    {
+        return $this->hasMany(InspectionField::class, 'car_inspection_field_categories_id');
+    }
 }

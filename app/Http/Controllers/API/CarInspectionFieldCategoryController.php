@@ -16,6 +16,21 @@ class CarInspectionFieldCategoryController extends Controller
         return response()->json($categories);
     }
 
+
+    // public function getCategoryWithFields()
+    // {
+    //     // Get all categories with their related inspection fields
+    //     $categories = CarInspectionFieldCategory::with(['inspectionFields'])->get();
+    //     return response()->json($categories);
+    // }
+    public function getCategoryWithFields()
+    {
+        // Get categories with inspection fields using eager loading
+        $categories = CarInspectionFieldCategory::with('inspectionFields')->has('inspectionFields')->get();
+
+        // Return the filtered categories
+        return response()->json($categories);
+    }
     // Store a newly created car inspection field category
     public function store(Request $request)
     {
