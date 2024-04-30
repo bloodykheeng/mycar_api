@@ -12,7 +12,7 @@ class InspectionFieldController extends Controller
     // Display a listing of inspection fields
     public function index()
     {
-        $inspectionFields = InspectionField::with(['creator', 'updater'])->get();
+        $inspectionFields = InspectionField::with(['category', 'creator', 'updater'])->get();
         return response()->json($inspectionFields);
     }
 
@@ -24,6 +24,7 @@ class InspectionFieldController extends Controller
             'field_type' => 'required|string|max:255',
             'status' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'car_inspection_field_categories_id' => 'required|integer|exists:car_inspection_field_categories,id'
         ]);
 
         $inspectionField = InspectionField::create([
@@ -31,6 +32,7 @@ class InspectionFieldController extends Controller
             'field_type' => $validatedData['field_type'],
             'status' => $validatedData['status'],
             'description' => $validatedData['description'],
+            'car_inspection_field_categories_id' => $validatedData['car_inspection_field_categories_id'],
             'created_by' => Auth::id(),
             'updated_by' => Auth::id(),
         ]);
@@ -41,7 +43,7 @@ class InspectionFieldController extends Controller
     // Display the specified inspection field
     public function show($id)
     {
-        $inspectionField = InspectionField::with(['creator', 'updater'])->find($id);
+        $inspectionField = InspectionField::with(['creator', 'updater', 'category'])->find($id);
 
         if (!$inspectionField) {
             return response()->json(['message' => 'Inspection field not found'], 404);
@@ -63,6 +65,7 @@ class InspectionFieldController extends Controller
             'field_type' => 'required|string|max:255',
             'status' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'car_inspection_field_categories_id' => 'required|integer|exists:car_inspection_field_categories,id'
         ]);
 
         $inspectionField->update([
@@ -70,6 +73,7 @@ class InspectionFieldController extends Controller
             'field_type' => $validatedData['field_type'],
             'status' => $validatedData['status'],
             'description' => $validatedData['description'],
+            'car_inspection_field_categories_id' => $validatedData['car_inspection_field_categories_id'],
             'updated_by' => Auth::id(),
         ]);
 

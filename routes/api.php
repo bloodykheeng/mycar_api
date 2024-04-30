@@ -37,6 +37,7 @@ use App\Http\Controllers\API\MotorThirdPartyController;
 use App\Http\Controllers\API\UserPermissionsController;
 use App\Http\Controllers\API\CarInspectionReportController;
 use App\Http\Controllers\API\DashboardSliderPhotoController;
+use App\Http\Controllers\API\CarInspectionFieldCategoryController;
 
 // Public Routes
 Route::post('/register', [AuthController::class, 'register']);
@@ -145,6 +146,7 @@ Route::group(
         Route::resource('car-wash-orders', CarWashOrderController::class);
 
         //=========================== Car Inspection =======================
+        Route::resource('inspection-field-categories', CarInspectionFieldCategoryController::class);
         Route::apiResource('inspection-fields', InspectionFieldController::class);
 
         Route::apiResource('car-inspection-reports', CarInspectionReportController::class);

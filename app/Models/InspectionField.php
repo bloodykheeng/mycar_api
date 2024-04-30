@@ -19,6 +19,7 @@ class InspectionField extends Model
         'field_type',
         'status',
         'description',
+        'car_inspection_field_categories_id',
         'created_by',
         'updated_by',
     ];
@@ -37,5 +38,10 @@ class InspectionField extends Model
     public function updater()
     {
         return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(CarInspectionFieldCategory::class, 'car_inspection_field_categories_id');
     }
 }
