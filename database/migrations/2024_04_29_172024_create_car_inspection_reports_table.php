@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('car_inspection_reports', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->text('description')->nullable();
+            $table->unsignedBigInteger('car_id');
+            $table->text('details')->nullable();
             $table->timestamps();
 
             // Tracking who created and updated the reports
@@ -22,6 +23,7 @@ return new class extends Migration
             $table->unsignedBigInteger('updated_by')->nullable();
 
             // Foreign key constraints
+            $table->foreign('car_id')->references('id')->on('cars')->onDelete('CASCADE');
             $table->foreign('created_by')->references('id')->on('users')->onDelete('SET NULL');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('SET NULL');
         });

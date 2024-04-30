@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('car_inspection_reports_id');
             $table->unsignedBigInteger('inspection_fields_id');
+            $table->unsignedBigInteger('car_inspection_report_categories_id');
             $table->text('value')->nullable();
             $table->timestamps();
 
@@ -24,6 +25,7 @@ return new class extends Migration
 
             // Foreign key constraints
             $table->foreign('car_inspection_reports_id')->references('id')->on('car_inspection_reports')->onDelete('CASCADE');
+            $table->foreign('car_inspection_report_categories_id', 'fk_car_inspection_report_categories')->references('id')->on('car_inspection_report_categories')->onDelete('CASCADE');
             $table->foreign('inspection_fields_id')->references('id')->on('inspection_fields')->onDelete('CASCADE');
             $table->foreign('created_by')->references('id')->on('users')->onDelete('SET NULL');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('SET NULL');
