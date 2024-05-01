@@ -155,6 +155,8 @@ Route::group(
 
         Route::get('categorized-inspection-fields', [CarInspectionFieldCategoryController::class, 'getCategoryWithFields']);
 
+        Route::post('update-car-report-status', [CarInspectionReportController::class, 'updateCarInspectionReportStatus']);
+
 
         //======================== User Management =================================
         Route::Resource('users', UserController::class);

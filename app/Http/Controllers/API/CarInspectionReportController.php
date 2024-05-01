@@ -42,7 +42,7 @@ class CarInspectionReportController extends Controller
         // Filter by status using the request input for 'reason'
         if ($request->has('reason')) {
             $statusReason = $request->input('reason');
-            if ($statusReason === 'pending_approval') {
+            if ($statusReason === 'pending-approval-by-the-admin') {
                 $reportsQuery->currentStatus('pending approval'); // Assuming the status name is exactly 'pending approval'
             } elseif ($statusReason === 'approved') {
                 $reportsQuery->currentStatus('approved');
@@ -55,6 +55,51 @@ class CarInspectionReportController extends Controller
         // Return the result as JSON
         return response()->json($reports);
     }
+
+
+    public function updateCarInspectionReportStatus(Request $request)
+    {
+        $request->validate([
+            'report_id' => 'required|integer', // Renamed to 'report_id' for clarity
+            'comment' => 'required|string',
+            'status' => 'required|in:approved,rejected',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            // Find the report by id and update its status
+            $report = CarInspectionReport::with([
+                'CarInspectionReportCategory' => function ($query) {
+                    $query->with([
+                        'inspectionFieldCategory',
+                        'fields' => function ($query) {
+                            $query->with([
+                                'inspectionField',
+                                'creator'
+                            ]);
+                        }
+                    ]);
+                },
+                'car',
+                'creator',
+                'updater'
+            ])->findOrFail($request->report_id);
+
+            $report->setStatus(
+                $request->status,
+                $request->comment
+            ); // Set status using Spatie's package
+
+
+            DB::commit();
+            return response()->json(['message' => 'Status updated successfully'], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => 'Error updating status', 'error' => $e->getMessage()], 500);
+        }
+    }
+
 
 
     // Display a specific report by ID

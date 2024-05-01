@@ -32,11 +32,38 @@ class Car extends Model
         'updated_by'
     ];
 
+    protected $appends = ['inspection_status'];
+
+    // Inspection status accessor
+    public function getInspectionStatusAttribute()
+    {
+        if ($this->inspectionReport) {
+            $latestStatus = $this->inspectionReport->latestStatus();
+            if ($latestStatus) {
+                switch ($latestStatus->name) {
+                    case 'approved':
+                        return 'approved';
+                    case 'rejected':
+                        return 'rejected';
+                    default:
+                        return 'inspected'; // Any status other than approved/rejected is considered as inspected
+                }
+            }
+            return 'inspected'; // Assume inspected if there is a report but no status
+        }
+        return 'not inspected'; // Default status if no report is linked
+    }
+
     public function photos()
     {
         return $this->hasMany(CarPhoto::class, 'car_id');
     }
 
+
+    public function inspectionReport()
+    {
+        return $this->hasOne(CarInspectionReport::class, 'car_id');
+    }
 
     public function carInspector()
     {

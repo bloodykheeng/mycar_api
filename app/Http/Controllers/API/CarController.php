@@ -17,7 +17,24 @@ class CarController extends Controller
     public function index(Request $request)
     {
         // Start building the query
-        $query = Car::with(['brand', 'photos', 'videos', 'type', 'vendor', 'createdBy', 'updatedBy', 'inspector', 'carInspector.inspector']);
+        $query = Car::with(['brand', 'photos', 'videos', 'type', 'vendor', 'createdBy', 'updatedBy', 'inspector', 'carInspector.inspector', 'inspectionReport' => function ($query) {
+            $query->with([
+                'CarInspectionReportCategory' => function ($query) {
+                    $query->with([
+                        'inspectionFieldCategory',
+                        'fields' => function ($query) {
+                            $query->with([
+                                'inspectionField',
+                                'creator'
+                            ]);
+                        }
+                    ]);
+                },
+                'car',
+                'creator',
+                'updater'
+            ]);
+        }]);
 
         // Get the currently authenticated user
         /** @var \App\Models\User */
