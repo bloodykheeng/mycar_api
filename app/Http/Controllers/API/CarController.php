@@ -17,24 +17,27 @@ class CarController extends Controller
     public function index(Request $request)
     {
         // Start building the query
-        $query = Car::with(['brand', 'photos', 'videos', 'type', 'vendor', 'createdBy', 'updatedBy', 'inspector', 'carInspector.inspector', 'inspectionReport' => function ($query) {
-            $query->with([
-                'CarInspectionReportCategory' => function ($query) {
-                    $query->with([
-                        'inspectionFieldCategory',
-                        'fields' => function ($query) {
-                            $query->with([
-                                'inspectionField',
-                                'creator'
-                            ]);
-                        }
-                    ]);
-                },
-                'car',
-                'creator',
-                'updater'
-            ]);
-        }]);
+        $query = Car::with([
+            'brand', 'photos', 'videos', 'type', 'vendor', 'createdBy', 'updatedBy', 'inspector', 'carInspector.inspector',
+            'inspectionReport' => function ($query) {
+                $query->with([
+                    'CarInspectionReportCategory' => function ($query) {
+                        $query->with([
+                            'inspectionFieldCategory',
+                            'fields' => function ($query) {
+                                $query->with([
+                                    'inspectionField',
+                                    'creator'
+                                ]);
+                            }
+                        ]);
+                    },
+                    'car',
+                    'creator',
+                    'updater'
+                ]);
+            }
+        ]);
 
         // Get the currently authenticated user
         /** @var \App\Models\User */
@@ -105,7 +108,28 @@ class CarController extends Controller
     public function getBySlug($slug)
     {
         // Retrieve the car along with related details
-        $car = Car::with(['brand', 'photos', 'videos', 'type', 'vendor', 'createdBy', 'updatedBy', 'inspector'])
+        $car = Car::with([
+            'brand', 'photos', 'videos', 'type', 'vendor', 'createdBy', 'updatedBy', 'inspector', 'carInspector.inspector',
+            'inspectionReport' => function ($query) {
+                $query->with([
+                    'CarInspectionReportCategory' => function ($query) {
+                        $query->with([
+                            'inspectionFieldCategory',
+                            'fields' => function ($query) {
+                                $query->with([
+                                    'inspectionField',
+                                    'creator'
+                                ]);
+                            }
+                        ]);
+                    },
+                    'car',
+                    'creator',
+                    'updater'
+                ]);
+            }
+        ])
+
             ->where('slug', $slug)
             ->first();
 
@@ -207,7 +231,27 @@ class CarController extends Controller
 
     public function show($id)
     {
-        $car = Car::with(['brand', 'type', 'photos', 'videos', 'vendor', 'createdBy', 'updatedBy', 'inspector'])->find($id);
+        $car = Car::with([
+            'brand', 'type', 'photos', 'videos', 'vendor', 'createdBy', 'updatedBy', 'inspector', 'carInspector.inspector',
+            'inspectionReport' => function ($query) {
+                $query->with([
+                    'CarInspectionReportCategory' => function ($query) {
+                        $query->with([
+                            'inspectionFieldCategory',
+                            'fields' => function ($query) {
+                                $query->with([
+                                    'inspectionField',
+                                    'creator'
+                                ]);
+                            }
+                        ]);
+                    },
+                    'car',
+                    'creator',
+                    'updater'
+                ]);
+            }
+        ])->find($id);
 
         if (!$car) {
             return response()->json(['message' => 'Car not found'], 404);
