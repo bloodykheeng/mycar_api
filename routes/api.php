@@ -16,15 +16,16 @@ use App\Http\Controllers\API\CarTypeController;
 use App\Http\Controllers\API\ParkingController;
 
 use App\Http\Controllers\API\CarBrandController;
+use App\Http\Controllers\API\CarsCartController;
+
 use App\Http\Controllers\API\OfficeFeeController;
 
+
 use App\Http\Controllers\API\SparePartController;
-
-
 use App\Http\Controllers\API\UserRolesController;
+
+
 use App\Http\Controllers\PasswordResetController;
-
-
 use App\Http\Controllers\API\CarWashFeeController;
 use App\Http\Controllers\API\OfficeRentController;
 use App\Http\Controllers\API\ParkingFeeController;
@@ -32,6 +33,7 @@ use App\Http\Controllers\API\CarInspectorController;
 use App\Http\Controllers\API\CarWashOrderController;
 use App\Http\Controllers\API\GarageReviewController;
 use App\Http\Controllers\API\SparePartTypeController;
+use App\Http\Controllers\API\SparePartsCartController;
 use App\Http\Controllers\API\InspectionFieldController;
 use App\Http\Controllers\API\MotorThirdPartyController;
 use App\Http\Controllers\API\UserPermissionsController;
@@ -128,6 +130,15 @@ Route::group(
         //================ Dashboard Slider ======================
         Route::resource('dashboard-slider-photos', DashboardSliderPhotoController::class)
             ->except(['index', 'show']);
+
+
+        //======================= Shopping Carts ========================
+        Route::apiResource('cars-cart', CarsCartController::class);
+        Route::get('cars-cart-by-user-id', [CarsCartController::class, 'getCartByUserId']);
+
+
+        Route::apiResource('spare-parts-cart', SparePartsCartController::class);
+        Route::get('spare-parts-carts-by-user-id', [SparePartsCartController::class, 'getCartByUserId']);
 
 
 
