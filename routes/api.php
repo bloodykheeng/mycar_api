@@ -16,7 +16,7 @@ use App\Http\Controllers\API\CarTypeController;
 use App\Http\Controllers\API\ParkingController;
 
 use App\Http\Controllers\API\CarBrandController;
-use App\Http\Controllers\API\CarsCartController;
+use App\Http\Controllers\API\CarCartController;
 
 use App\Http\Controllers\API\OfficeFeeController;
 
@@ -33,7 +33,7 @@ use App\Http\Controllers\API\CarInspectorController;
 use App\Http\Controllers\API\CarWashOrderController;
 use App\Http\Controllers\API\GarageReviewController;
 use App\Http\Controllers\API\SparePartTypeController;
-use App\Http\Controllers\API\SparePartsCartController;
+use App\Http\Controllers\API\SparePartCartController;
 use App\Http\Controllers\API\InspectionFieldController;
 use App\Http\Controllers\API\MotorThirdPartyController;
 use App\Http\Controllers\API\UserPermissionsController;
@@ -133,12 +133,12 @@ Route::group(
 
 
         //======================= Shopping Carts ========================
-        Route::apiResource('cars-cart', CarsCartController::class);
-        Route::get('cars-cart-by-user-id', [CarsCartController::class, 'getCartByUserId']);
+        Route::apiResource('car-carts', CarCartController::class);
+        Route::post('sync-car-carts', [CarCartController::class, 'syncCarCarts']);
 
+        Route::apiResource('spare-part-carts', SparePartCartController::class);
+        Route::post('sync-spare-carts', [SparePartCartController::class, 'syncSparePartCarts']);
 
-        Route::apiResource('spare-parts-cart', SparePartsCartController::class);
-        Route::get('spare-parts-carts-by-user-id', [SparePartsCartController::class, 'getCartByUserId']);
 
 
 
