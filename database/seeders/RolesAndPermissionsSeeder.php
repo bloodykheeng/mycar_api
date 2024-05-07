@@ -40,6 +40,12 @@ class RolesAndPermissionsSeeder extends Seeder
                 'update',
                 'delete',
             ],
+            'Seller' => [
+                'view',
+                'create',
+                'update',
+                'delete',
+            ],
             'Buyer' => [
                 'view',
                 'create',
