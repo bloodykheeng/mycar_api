@@ -44,6 +44,8 @@ class UserController extends Controller
         // Adding role names to each user
         $users->transform(function ($user) {
             $user->role = $user->getRoleNames()->first() ?? "";
+             // Adding permissions
+        $user->permissions = $user->getAllPermissions()->pluck('name');
             return $user;
         });
 
@@ -65,6 +67,9 @@ class UserController extends Controller
 
         // Adding role name
         $user->role = $user->getRoleNames()->first() ?? "";
+
+        // Adding permissions
+        $user->permissions = $user->getAllPermissions()->pluck('name');
 
         return response()->json($user);
     }
