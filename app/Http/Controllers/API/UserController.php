@@ -69,8 +69,12 @@ class UserController extends Controller
         $user->role = $user->getRoleNames()->first() ?? "";
 
         // Adding permissions
-        $user->permissions = $user->getAllPermissions()->pluck('name');
+        // $user_perissions = $user->getAllPermissions()->pluck('name');
+        // $user->permissions = $user_perissions;
+        $user->permissions = $user->getPermissionsViaRoles()->pluck('name');
+   
 
+       
         return response()->json($user);
     }
 
