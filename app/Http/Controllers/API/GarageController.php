@@ -18,6 +18,9 @@ class GarageController extends Controller
         // Start building the query
         $query = Garage::with(['createdByUser', 'updatedByUser', 'reviews']);
 
+        // Order the results by the created_at column in descending order (latest first)
+        // $query->latest();
+
         // Apply filters from request
         if (!empty($request->search)) { // Check if search is not null and not an empty string
             $query->where('name', 'like', '%' . $request->search . '%');

@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('description')->nullable();
             $table->decimal('price', 8, 2);
             $table->string('condition')->default('new')->index();
-            $table->enum('approval_status', ['pending', 'approved', 'rejected'])->default('pending');
+            $table->enum('approval_status', ['pending', 'approved', 'rejected'])->default('pending')->index();
             $table->unsignedBigInteger('spare_part_type_id')->nullable();
             $table->unsignedBigInteger('vendor_id')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();

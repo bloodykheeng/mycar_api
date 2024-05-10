@@ -18,6 +18,9 @@ class SparePartController extends Controller
         // Start building the query
         $query = SparePart::with(['sparePartType', 'vendor', 'createdBy', 'updatedBy']);
 
+        // Order the results by the created_at column in descending order (latest first)
+        // $query->latest();
+
         // Get the currently authenticated user
         /** @var \App\Models\User */
         $user = Auth::user();
@@ -32,10 +35,23 @@ class SparePartController extends Controller
         }
 
         // Apply filters from request
-        
+        if ($request->has('approval_status')) {
+            $approvalStatus = $request->input('approval_status');
+          
+            if (is_array($approvalStatus)) {
+              // Handle array case:
+              $query->whereIn('approval_status', $approvalStatus);
+            } else {
+              // Handle single value case:
+              $query->where('approval_status', $approvalStatus);
+            }
+          }
+
+          
         if ($request->has('user_id')) {
             $query->where('created_by', $request->user_id);
         }
+
 
 
         if (!empty($request->search)) { // Check if search is not null and not an empty string

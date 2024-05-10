@@ -13,7 +13,15 @@ class VendorController extends Controller
     // Display a listing of vendors
     public function index()
     {
-        $vendors = Vendor::with(['createdBy', 'updatedBy'])->get();
+        // Start building the query
+        $query = Vendor::with(['createdBy', 'updatedBy']);
+    
+        // Order the results by the created_at column in descending order (latest first)
+        // $query->latest();
+    
+        // Execute the query and get the results
+        $vendors = $query->get();
+    
         return response()->json($vendors);
     }
 

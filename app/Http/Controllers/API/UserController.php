@@ -25,6 +25,9 @@ class UserController extends Controller
 
         $query = User::query();
 
+        // Order the results by the created_at column in descending order (latest first)
+        // $query->latest();
+
         // Check if vendor_id is provided and not null
         if ($request->has('vendor_id') && $request->vendor_id !== null) {
             // Filter users by the provided vendor_id

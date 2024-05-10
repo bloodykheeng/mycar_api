@@ -39,6 +39,9 @@ class CarController extends Controller
             }
         ]);
 
+        // Order the results by the created_at column in descending order (latest first)
+        // $query->orderBy('created_at', 'desc');
+
         // Get the currently authenticated user
         /** @var \App\Models\User */
         // $user = Auth::user();
@@ -83,11 +86,25 @@ class CarController extends Controller
             $query->where('name', 'like', '%' . $request->search . '%');
         }
 
+        
+
+        // if (!empty($request->inspection_status)) { 
+        //     if ($request->inspection_status == 'inspected') {
+        //         $query->whereHas('inspectionReport');
+        //     } elseif ($request->inspection_status == 'not_inspected') {
+        //         $query->whereDoesntHave('inspectionReport');
+        //     }
+        // }
+
         if (!empty($request->user_id)) { // Check if search is not null and not an empty string
             $query->where('created_by', $request->user_id);
         }
-      
 
+        if (!empty($request->visibility)) { // Check if search is not null and not an empty string
+            $query->where('visibility', $request->visibility);
+        }
+
+        
         if (!empty($request->condition)) { // Check if condition is not null and not an empty string
             $query->where('condition', $request->condition);
         }
@@ -105,6 +122,13 @@ class CarController extends Controller
 
         // Execute the query and get the results
         $cars = $query->get();
+
+           // Filter cars by inspection status based on the value from the request
+    if (!empty($request->inspection_status)) {
+        $cars = $cars->filter(function ($car) use ($request) {
+            return $car->inspection_status === $request->inspection_status;
+        });
+    }
 
         return response()->json($cars);
     }

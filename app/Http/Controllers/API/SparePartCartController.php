@@ -13,6 +13,9 @@ class SparePartCartController extends Controller
     {
         $query = SparePartCart::with(['sparePart', 'createdBy', 'updatedBy']);
 
+        // Order the results by the created_at column in descending order (latest first)
+        // $query->latest();
+
         if ($request->has('user_id')) {
             $query->where('created_by', $request->user_id);
         }

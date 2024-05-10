@@ -14,6 +14,9 @@ class ParkingController extends Controller
         // Start building the query
         $query = Parking::with(['car', 'parkingFee', 'vendor', 'createdBy', 'updatedBy']);
 
+        // Order the results by the created_at column in descending order (latest first)
+        // $query->latest();
+
         // Get the currently authenticated user
         /** @var \App\Models\User */
         $user = Auth::user();
