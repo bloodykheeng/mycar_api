@@ -32,6 +32,12 @@ class SparePartController extends Controller
         }
 
         // Apply filters from request
+        
+        if ($request->has('user_id')) {
+            $query->where('created_by', $request->user_id);
+        }
+
+
         if (!empty($request->search)) { // Check if search is not null and not an empty string
             $query->where('name', 'like', '%' . $request->search . '%');
         }
@@ -80,7 +86,8 @@ class SparePartController extends Controller
             'description' => 'nullable|string',
             'condition' => 'nullable|string|max:255',
             'price' => 'required|numeric',
-            'vendor_id' => 'required|exists:vendors,id',
+            // 'vendor_id' => 'required|exists:vendors,id',
+            'vendor_id' => 'nullable|exists:vendors,id',
             'spare_part_type_id' => 'required|exists:spare_part_types,id',
         ]);
 
@@ -123,7 +130,8 @@ class SparePartController extends Controller
             'description' => 'nullable|string',
             'condition' => 'nullable|string|max:255',
             'price' => 'required|numeric',
-            'vendor_id' => 'required|exists:vendors,id',
+            // 'vendor_id' => 'required|exists:vendors,id',
+            'vendor_id' => 'nullable|exists:vendors,id',
             'spare_part_type_id' => 'required|exists:spare_part_types,id',
         ]);
 

@@ -83,6 +83,11 @@ class CarController extends Controller
             $query->where('name', 'like', '%' . $request->search . '%');
         }
 
+        if (!empty($request->user_id)) { // Check if search is not null and not an empty string
+            $query->where('created_by', $request->user_id);
+        }
+      
+
         if (!empty($request->condition)) { // Check if condition is not null and not an empty string
             $query->where('condition', $request->condition);
         }
