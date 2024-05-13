@@ -14,11 +14,14 @@ return new class extends Migration
         Schema::create('spare_parts', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('identifier')->index()->nullable();
             $table->string('photo_url')->nullable();
             $table->string('slug')->unique()->index();
             $table->string('description')->nullable();
             $table->decimal('price', 8, 2);
+            $table->integer('quantity')->default(0);
             $table->string('condition')->default('new')->index();
+            $table->string('status')->nullable()->index();
             $table->enum('approval_status', ['pending', 'approved', 'rejected'])->default('pending')->index();
             $table->unsignedBigInteger('spare_part_type_id')->nullable();
             $table->unsignedBigInteger('vendor_id')->nullable();

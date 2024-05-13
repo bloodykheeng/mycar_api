@@ -53,6 +53,7 @@ Route::middleware('auth:sanctum')->get('/user', [AuthController::class, 'checkLo
 
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
+Route::post('/third-party-auth', [AuthController::class, 'thirdPartyAuthentication'])->name('thirdPartyAuthentication');
 
 
 Route::post('forgot-password', [PasswordResetController::class, 'forgetPassword']);

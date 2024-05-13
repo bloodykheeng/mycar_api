@@ -86,4 +86,18 @@ class User extends Authenticatable
         // Fallback if reached 1000 iterations (should ideally never happen)
         return "{$baseSlug}-" . uniqid();
     }
+
+    public function providers()
+    {
+        return $this->hasMany(ThirdPartyAuthProvider::class,'user_id','id');
+    }
+
+    public function setEmailAttribute($value) {
+        if ( empty($value) ) { // will check for empty string
+        $this->attributes['email'] = NULL;
+        } else {
+            $this->attributes['email'] = $value;
+        }
+    }
+    
 }

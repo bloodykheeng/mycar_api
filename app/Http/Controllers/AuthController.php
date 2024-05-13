@@ -2,14 +2,12 @@
 
 namespace App\Http\Controllers;
 
-
+use App\Models\ThirdPartyAuthProvider;
 use App\Models\User;
-
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-
+use Illuminate\Validation\ValidationException;
 use Spatie\Permission\Models\Role;
 
 /**
@@ -21,10 +19,9 @@ use Spatie\Permission\Models\Role;
 class AuthController extends Controller
 {
 
-
     public function register(Request $request)
     {
-        $validatedData =  $request->validate([
+        $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'status' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -55,26 +52,19 @@ class AuthController extends Controller
                 $user->vendors()->create(['vendor_id' => $validatedData['vendor_id']]);
             }
 
-
-
             $token = $user->createToken('auth_token')->plainTextToken;
 
             return response()->json([
                 'data' => $user,
                 'access_token' => $token,
-                'token_type' => 'Bearer'
+                'token_type' => 'Bearer',
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
-
-
-
-
-
 
     public function checkLoginStatus()
     {
@@ -114,10 +104,6 @@ class AuthController extends Controller
 
         return response()->json($response);
     }
-
-
-
-
 
     public function login(Request $request)
     {
@@ -160,10 +146,177 @@ class AuthController extends Controller
         return response()->json($response);
     }
 
+    public function thirdPartyAuthentication(Request $request)
+    {
+        try {
+            $request->validate([
+                'name' => 'required',
+                'email' => 'nullable|email|unique:users,email',
+                'picture' => 'required',
+                'client_id' => 'required',
+                'provider' => 'required',
+            ]);
 
+            // Check if the email is provided
+            if ($request->has('email')) {
+                // Check if the user already exists with the provided email
+                // $user = User::where('email', $request->email)->first();
 
+                $user = User::firstOrCreate(
+                    ['email' => $request->email], // Check by email
+                    [
+                        'email_verified_at' => now(),
+                        'name' => $request->name, // Use name from request
+                        'status' => "active",
+                    ]
+                );
 
+                // If the user exists, associate the provider with this user
+                if ($user) {
+                    // Create a provider entry
+                    // ThirdPartyAuthProvider::create([
+                    //     'provider' => $request->provider,
+                    //     'provider_id' => $request->client_id,
+                    //     'user_id' => $user->id,
+                    //     'photo_url' => $request->picture,
+                    // ]);
 
+                    // Create or update the provider entry
+                    $user->providers()->updateOrCreate(
+                        [
+                            'provider' => $request->provider,
+                            'provider_id' => $request->client_id,
+                        ],
+                        [
+                            'photo_url' => $request->picture,
+                        ]
+                    );
+
+                    // Log the user in
+                    Auth::login($user);
+
+                    // Retrieve the token
+                    $token = $user->createToken('auth_token')->plainTextToken;
+
+                    // Prepare the response
+                    $response = [
+                        'message' => 'Hi ' . $user->name . ', welcome to home',
+                        'id' => $user->id,
+                        'access_token' => $token,
+                        'token_type' => 'Bearer',
+                        'name' => $user->name,
+                        'lastlogin' => $user->lastlogin,
+                        'email' => $user->email,
+                        'status' => $user->status,
+                        'photo_url' => $user->photo_url,
+                        'permissions' => $user->getAllPermissions()->pluck('name'), // pluck for simplified array
+                        'role' => $user->getRoleNames()->first() ?? "",
+                    ];
+
+                    // Check if the user is a Vendor and include vendor details
+                    if ($user->hasRole('Vendor')) {
+                        $vendor = $user->vendors()->first(); // Assuming there's a vendors() relationship
+                        $response['vendor'] = [
+                            'id' => $vendor->vendor_id ?? null,
+                            'name' => $vendor->vendor->name ?? 'Unknown Vendor', // Assuming there's a name attribute on the vendor
+                        ];
+                    }
+
+                    // Return the response
+                    return response()->json($response, 200);
+                }
+            }
+
+            if (empty($request->has('email'))) {
+                // If email is not provided or user does not exist with the provided email, check providers table
+                $provider = ThirdPartyAuthProvider::where('provider_id', $request->client_id)->first();
+
+                // If provider found, associate the provider with the user
+                if ($provider) {
+                    // Log the user in
+                    Auth::login($provider->user);
+
+                    // Retrieve the token
+                    $token = $provider->user->createToken('auth_token')->plainTextToken;
+
+                    // Prepare the response
+                    $response = [
+                        'message' => 'Hi ' . $provider->user->name . ', welcome to home',
+                        'id' => $provider->user->id,
+                        'access_token' => $token,
+                        'token_type' => 'Bearer',
+                        'name' => $provider->user->name,
+                        'lastlogin' => $provider->user->lastlogin,
+                        'email' => $provider->user->email,
+                        'status' => $provider->user->status,
+                        'photo_url' => $provider->user->photo_url,
+                        'permissions' => $provider->user->getAllPermissions()->pluck('name'), // pluck for simplified array
+                        'role' => $provider->user->getRoleNames()->first() ?? "",
+                    ];
+
+                    // Check if the user is a Vendor and include vendor details
+                    if ($provider->user->hasRole('Vendor')) {
+                        $vendor = $provider->user->vendors()->first(); // Assuming there's a vendors() relationship
+                        $response['vendor'] = [
+                            'id' => $vendor->vendor_id ?? null,
+                            'name' => $vendor->vendor->name ?? 'Unknown Vendor', // Assuming there's a name attribute on the vendor
+                        ];
+                    }
+
+                    // Return the response
+                    return response()->json($response, 200);
+                } else {
+                    // If provider is not set, create the user
+                    $user = User::create([
+                        'name' => $request->name,
+                        'email' => null,
+                        'status' => true, // Assuming default status is true
+                    ]);
+
+                    // Create the provider entry for the new user
+                    $newProvider = ThirdPartyAuthProvider::create([
+                        'provider' => $request->provider,
+                        'provider_id' => $request->client_id,
+                        'user_id' => $user->id,
+                        'photo_url' => $request->picture,
+                    ]);
+
+                    // Log the user in
+                    Auth::login($user);
+
+                    // Retrieve the token
+                    $token = $user->createToken('auth_token')->plainTextToken;
+
+                    // Prepare the response
+                    $response = [
+                        'message' => 'Hi ' . $user->name . ', welcome to home',
+                        'id' => $user->id,
+                        'access_token' => $token,
+                        'token_type' => 'Bearer',
+                        'name' => $user->name,
+                        'lastlogin' => $user->lastlogin,
+                        'email' => $user->email,
+                        'status' => $user->status,
+                        'photo_url' => $user->photo_url,
+                        'permissions' => $user->getAllPermissions()->pluck('name'), // pluck for simplified array
+                        'role' => $user->getRoleNames()->first() ?? "",
+                    ];
+
+                    // Return the response
+                    return response()->json($response, 200);
+                }
+            }
+
+            // If no user or provider found, throw error
+            throw ValidationException::withMessages([
+                'email' => ['User not found.'],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
 
     // method for user logout and delete token
     public function logout()
