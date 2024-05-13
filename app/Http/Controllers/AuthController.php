@@ -146,12 +146,12 @@ class AuthController extends Controller
         return response()->json($response);
     }
 
-    public function thirdPartyAuthentication(Request $request)
+    public function thirdPartyLoginAuthentication(Request $request)
     {
         try {
             $request->validate([
                 'name' => 'required',
-                'email' => 'nullable|email|unique:users,email',
+                'email' => 'nullable',
                 'picture' => 'required',
                 'client_id' => 'required',
                 'provider' => 'required',
@@ -160,26 +160,13 @@ class AuthController extends Controller
             // Check if the email is provided
             if ($request->has('email')) {
                 // Check if the user already exists with the provided email
-                // $user = User::where('email', $request->email)->first();
-
-                $user = User::firstOrCreate(
-                    ['email' => $request->email], // Check by email
-                    [
-                        'email_verified_at' => now(),
-                        'name' => $request->name, // Use name from request
-                        'status' => "active",
-                    ]
-                );
+                $user = User::where('email', $request->email)->first();
+                if (empty($user)) {
+                    return response()->json(['message' => 'Invalid Email'], 401);
+                }
 
                 // If the user exists, associate the provider with this user
                 if ($user) {
-                    // Create a provider entry
-                    // ThirdPartyAuthProvider::create([
-                    //     'provider' => $request->provider,
-                    //     'provider_id' => $request->client_id,
-                    //     'user_id' => $user->id,
-                    //     'photo_url' => $request->picture,
-                    // ]);
 
                     // Create or update the provider entry
                     $user->providers()->updateOrCreate(
@@ -231,8 +218,12 @@ class AuthController extends Controller
                 // If email is not provided or user does not exist with the provided email, check providers table
                 $provider = ThirdPartyAuthProvider::where('provider_id', $request->client_id)->first();
 
+                if (empty($provider->user)) {
+                    return response()->json(['message' => 'Invalid Credentials'], 401);
+                }
+
                 // If provider found, associate the provider with the user
-                if ($provider) {
+                if (isset($provider->user)) {
                     // Log the user in
                     Auth::login($provider->user);
 
@@ -265,12 +256,103 @@ class AuthController extends Controller
 
                     // Return the response
                     return response()->json($response, 200);
+                }
+            }
+
+            // If no user or provider found, throw error
+            throw ValidationException::withMessages([
+                'email' => ['User not found.'],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+                'line' => $e->getLine(),
+            ], 500);
+        }
+    }
+
+    public function thirdPartyRegisterAuthentication(Request $request)
+    {
+        try {
+            $request->validate([
+                'name' => 'required',
+                'email' => 'nullable|email|unique:users,email',
+                'picture' => 'required',
+                'client_id' => 'required',
+                'provider' => 'required',
+            ]);
+
+            // Check if the email is provided
+            if ($request->has('email')) {
+                // Check if the user already exists with the provided email
+                $user = User::where('email', $request->email)->first();
+
+                if (isset($user)) {
+                    return response()->json(['message' => 'Account Already Exists'], 409);
+                }
+
+                // $user = User::firstOrCreate(
+                //     ['email' => $request->email], // Check by email
+                //     [
+                //         'email_verified_at' => now(),
+                //         'name' => $request->name, // Use name from request
+                //         'status' => "active",
+                //         'password' => Hash::make($request->client_id),
+                //     ]
+                // );
+
+                // If the user exists, associate the provider with this user
+                if (empty($user)) {
+
+                    $user = User::Create(
+                        [
+                            'email' => $request->email,
+                            'email_verified_at' => now(),
+                            'name' => $request->name, // Use name from request
+                            'status' => "active",
+                            'password' => Hash::make($request->client_id),
+                        ]
+                    );
+
+                    // Create or update the provider entry
+                    $user->providers()->updateOrCreate(
+                        [
+                            'provider' => $request->provider,
+                            'provider_id' => $request->client_id,
+                        ],
+                        [
+                            'photo_url' => $request->picture,
+                        ]
+                    );
+
+                    // Log the user in
+                    // Auth::login($user);
+
+                    // Retrieve the token
+                    $token = $user->createToken('auth_token')->plainTextToken;
+
+                    return response()->json([
+                        'data' => $user,
+                        'access_token' => $token,
+                        'token_type' => 'Bearer',
+                    ]);
+                }
+            }
+
+            if (empty($request->has('email'))) {
+                // If email is not provided or user does not exist with the provided email, check providers table
+                $provider = ThirdPartyAuthProvider::where('provider_id', $request->client_id)->first();
+
+                // If provider found, associate the provider with the user
+                if (isset($provider->user)) {
+                    return response()->json(['message' => 'Account Already Exists'], 409);
                 } else {
                     // If provider is not set, create the user
                     $user = User::create([
                         'name' => $request->name,
                         'email' => null,
-                        'status' => true, // Assuming default status is true
+                        'status' => 'active', // Assuming default status is true
+                        'password' => Hash::make($request->client_id),
                     ]);
 
                     // Create the provider entry for the new user
@@ -282,28 +364,17 @@ class AuthController extends Controller
                     ]);
 
                     // Log the user in
-                    Auth::login($user);
+                    // Auth::login($user);
 
                     // Retrieve the token
                     $token = $user->createToken('auth_token')->plainTextToken;
 
-                    // Prepare the response
-                    $response = [
-                        'message' => 'Hi ' . $user->name . ', welcome to home',
-                        'id' => $user->id,
+                    return response()->json([
+                        'data' => $user,
+                        'message' => 'Account created successfully',
                         'access_token' => $token,
                         'token_type' => 'Bearer',
-                        'name' => $user->name,
-                        'lastlogin' => $user->lastlogin,
-                        'email' => $user->email,
-                        'status' => $user->status,
-                        'photo_url' => $user->photo_url,
-                        'permissions' => $user->getAllPermissions()->pluck('name'), // pluck for simplified array
-                        'role' => $user->getRoleNames()->first() ?? "",
-                    ];
-
-                    // Return the response
-                    return response()->json($response, 200);
+                    ]);
                 }
             }
 
@@ -314,6 +385,7 @@ class AuthController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage(),
+                'line' => $e->getLine(),
             ], 500);
         }
     }

@@ -1,77 +1,59 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\API\CarController;
-use App\Http\Controllers\API\UserController;
-
-use App\Http\Controllers\API\GarageController;
-
-use App\Http\Controllers\API\OfficeController;
-use App\Http\Controllers\API\VendorController;
-use App\Http\Controllers\API\CarTypeController;
-
-
-use App\Http\Controllers\API\ParkingController;
-
 use App\Http\Controllers\API\CarBrandController;
 use App\Http\Controllers\API\CarCartController;
-
-use App\Http\Controllers\API\OfficeFeeController;
-
-
-use App\Http\Controllers\API\SparePartController;
-use App\Http\Controllers\API\UserRolesController;
-
-
-use App\Http\Controllers\PasswordResetController;
-use App\Http\Controllers\API\CarWashFeeController;
-use App\Http\Controllers\API\OfficeRentController;
-use App\Http\Controllers\API\ParkingFeeController;
+use App\Http\Controllers\API\CarController;
+use App\Http\Controllers\API\CarInspectionFieldCategoryController;
+use App\Http\Controllers\API\CarInspectionReportController;
 use App\Http\Controllers\API\CarInspectorController;
+use App\Http\Controllers\API\CarTypeController;
+use App\Http\Controllers\API\CarWashFeeController;
 use App\Http\Controllers\API\CarWashOrderController;
+use App\Http\Controllers\API\DashboardSliderPhotoController;
+use App\Http\Controllers\API\GarageController;
 use App\Http\Controllers\API\GarageReviewController;
-use App\Http\Controllers\API\SparePartTypeController;
-use App\Http\Controllers\API\SparePartCartController;
 use App\Http\Controllers\API\InspectionFieldController;
 use App\Http\Controllers\API\MotorThirdPartyController;
+use App\Http\Controllers\API\OfficeController;
+use App\Http\Controllers\API\OfficeRentController;
+use App\Http\Controllers\API\ParkingController;
+use App\Http\Controllers\API\ParkingFeeController;
+use App\Http\Controllers\API\SparePartCartController;
+use App\Http\Controllers\API\SparePartController;
+use App\Http\Controllers\API\SparePartTypeController;
+use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\UserPermissionsController;
-use App\Http\Controllers\API\CarInspectionReportController;
-use App\Http\Controllers\API\DashboardSliderPhotoController;
-use App\Http\Controllers\API\CarInspectionFieldCategoryController;
+use App\Http\Controllers\API\UserRolesController;
+use App\Http\Controllers\API\VendorController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PasswordResetController;
+use Illuminate\Support\Facades\Route;
 
 // Public Routes
 Route::post('/register', [AuthController::class, 'register']);
 // Route::post('/login', [AuthController::class, 'login']);
 
-
-
 //check if user is still logged in
 // Route::get('/user', [AuthController::class, 'checkLoginStatus']);
 Route::middleware('auth:sanctum')->get('/user', [AuthController::class, 'checkLoginStatus']);
 
-
 Route::post('/login', [AuthController::class, 'login'])->name('login');
-Route::post('/third-party-auth', [AuthController::class, 'thirdPartyAuthentication'])->name('thirdPartyAuthentication');
-
+Route::post('/third-party-login-auth', [AuthController::class, 'thirdPartyLoginAuthentication'])->name('thirdPartyLoginAuthentication');
+Route::post('/third-party-register-auth', [AuthController::class, 'thirdPartyRegisterAuthentication'])->name('thirdPartyRegisterAuthentication');
 
 Route::post('forgot-password', [PasswordResetController::class, 'forgetPassword']);
 Route::get('/reset-password', [PasswordResetController::class, 'handleresetPasswordLoad']);
 Route::post('/reset-password', [PasswordResetController::class, 'handlestoringNewPassword']);
 
-
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
 // })->middleware('auth:sanctum');
-
 
 //========================= puclic routes ===================
 // Public routes for viewing dashboard slider photos
 Route::resource('dashboard-slider-photos', DashboardSliderPhotoController::class)->only(['index', 'show']);
 // car type
 Route::resource('car-types', CarTypeController::class)->only(['index', 'show']);
-
 
 // car routes
 Route::apiResource('cars', CarController::class)->only(['index', 'show']);
@@ -87,18 +69,12 @@ Route::resource('motor-third-parties', MotorThirdPartyController::class)->only([
 
 Route::apiResource('vendors', VendorController::class)->only(['index', 'show']);
 
-
-
-
-
 //=============================== private routes ==================================
 Route::group(
     ['middleware' => ['auth:sanctum']],
     function () {
         // Vendor routes
         Route::apiResource('vendors', VendorController::class)->except(['index', 'show']);
-
-
 
         // car type
         Route::resource('car-types', CarTypeController::class)->except(['index', 'show']);
@@ -132,7 +108,6 @@ Route::group(
         Route::resource('dashboard-slider-photos', DashboardSliderPhotoController::class)
             ->except(['index', 'show']);
 
-
         //======================= Shopping Carts ========================
         Route::apiResource('car-carts', CarCartController::class);
         Route::post('sync-car-carts', [CarCartController::class, 'syncCarCarts']);
@@ -140,16 +115,11 @@ Route::group(
         Route::apiResource('spare-part-carts', SparePartCartController::class);
         Route::post('sync-spare-carts', [SparePartCartController::class, 'syncSparePartCarts']);
 
-
-
-
-
         // ParkingFee routes
         Route::apiResource('parking-fees', ParkingFeeController::class);
 
         //=================== parking =========================
         Route::resource('parking', ParkingController::class);
-
 
         // ====================== Car Wash Fees ===========================
         Route::resource('car-wash-fees', CarWashFeeController::class);
@@ -168,7 +138,6 @@ Route::group(
         Route::get('categorized-inspection-fields', [CarInspectionFieldCategoryController::class, 'getCategoryWithFields']);
 
         Route::post('update-car-report-status', [CarInspectionReportController::class, 'updateCarInspectionReportStatus']);
-
 
         //======================== User Management =================================
         Route::Resource('users', UserController::class);

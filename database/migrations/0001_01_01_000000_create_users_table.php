@@ -19,10 +19,12 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('email_verified')->nullable();
             $table->string('status')->nullable()->index();
+            $table->string('login_method')->default('direct');
             $table->timestamp('lastlogin')->nullable()->useCurrent();
             $table->string('photo_url')->nullable();
             $table->string('password')->nullable();
             $table->string('phone_number')->nullable();
+            $table->boolean('agree_to_terms')->default(false);
             $table->rememberToken();
             $table->timestamps();
         });
